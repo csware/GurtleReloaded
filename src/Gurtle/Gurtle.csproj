@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{43B56168-AC09-49A4-8BC8-F35B8606DB59}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Gurtle</RootNamespace>
+    <AssemblyName>Gurtle</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WIN64</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>..\..\bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;WIN64</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>..\..\bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;WIN32</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\lib\LinqBridge-1.1.cs">
+      <Link>LinqBridge-1.1.cs</Link>
+    </Compile>
+    <Compile Include="Actions.cs" />
+    <Compile Include="AppPaths.cs" />
+    <Compile Include="ByteSizeFormatter.cs" />
+    <Compile Include="CollectionItemBatchEventArgs.cs" />
+    <Compile Include="CollectionItemEventArgs.cs" />
+    <Compile Include="ComboBoxExtensions.cs" />
+    <Compile Include="CredentialsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CredentialsDialog.Designer.cs">
+      <DependentUpon>CredentialsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CredentialPrompt.cs" />
+    <Compile Include="CurrentCursorScope.cs" />
+    <Compile Include="CustomFormatter.cs" />
+    <Compile Include="DataBindingExtensions.cs" />
+    <Compile Include="DelegatingComparer.cs" />
+    <Compile Include="DictionaryExtensions.cs" />
+    <Compile Include="DownloadStringCompletedEventArgs.cs" />
+    <Compile Include="GoogleCodeProject.cs" />
+    <Compile Include="IBugTraqProvider.cs" />
+    <Compile Include="IBugTraqProvider2.cs" />
+    <Compile Include="ISingletonScopeHelper.cs" />
+    <Compile Include="Issue.cs" />
+    <Compile Include="IssueBrowserDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IssueBrowserDialog.Designer.cs">
+      <DependentUpon>IssueBrowserDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IssueField.cs" />
+    <Compile Include="IssueUpdate.cs" />
+    <Compile Include="IssueUpdateDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IssueUpdateDialog.Designer.cs">
+      <DependentUpon>IssueUpdateDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IssueUpdateInfoDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IssueUpdateInfoDialog.Designer.cs">
+      <DependentUpon>IssueUpdateInfoDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IssueUpdatePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="IssueUpdatePage.Designer.cs">
+      <DependentUpon>IssueUpdatePage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OptionsDialog.Designer.cs">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ParametersParseException.cs" />
+    <Compile Include="ListViewItem.cs" />
+    <Compile Include="ListViewSorter.cs" />
+    <Compile Include="MetaIssue.cs" />
+    <Compile Include="IssueTableParser.cs" />
+    <Compile Include="ObservableCollection.cs" />
+    <Compile Include="OleDispatchDriver.cs" />
+    <Compile Include="Parameters.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="CredentialsDialog.resx">
+      <DependentUpon>CredentialsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IssueBrowserDialog.resx">
+      <DependentUpon>IssueBrowserDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IssueUpdateDialog.resx">
+      <DependentUpon>IssueUpdateDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IssueUpdateInfoDialog.resx">
+      <DependentUpon>IssueUpdateInfoDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IssueUpdatePage.resx">
+      <DependentUpon>IssueUpdatePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionsDialog.resx">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WebProxyDialog.resx">
+      <DependentUpon>WebProxyDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WorkProgressForm.resx">
+      <DependentUpon>WorkProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\AssemblyInfoVersion.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Property.cs" />
+    <Compile Include="RevisionEventArgs.cs" />
+    <Compile Include="ScriptControl.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="SingletonScope.cs" />
+    <Compile Include="StringExtensions.cs" />
+    <Compile Include="TextReaderExtensions.cs" />
+    <Compile Include="WebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WebProxyDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WebProxyDialog.Designer.cs">
+      <DependentUpon>WebProxyDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WindowHandleWrapper.cs" />
+    <Compile Include="WindowSettings.cs" />
+    <Compile Include="WorkProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WorkProgressForm.Designer.cs">
+      <DependentUpon>WorkProgressForm.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="KnightRider.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Update.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent />
+    <PreBuildEvent>if not exist  "$(SolutionDir)gurtle\Properties\AssemblyInfoVersion.cs" copy "$(SolutionDir)gurtle\Properties\AssemblyInfoVersion.0.cs" "$(SolutionDir)gurtle\Properties\AssemblyInfoVersion.cs"</PreBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,6 @@
+/bin
+/src/Gurtle/obj
+/src/version.txt
+/src/setup/VersionNumberInclude.wxi
+*.user
+*.suo
