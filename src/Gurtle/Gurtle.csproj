@@ -100,12 +100,6 @@
     <Compile Include="IssueUpdateDialog.Designer.cs">
       <DependentUpon>IssueUpdateDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="IssueUpdateInfoDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="IssueUpdateInfoDialog.Designer.cs">
-      <DependentUpon>IssueUpdateInfoDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="IssueUpdatePage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -136,9 +130,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IssueUpdateDialog.resx">
       <DependentUpon>IssueUpdateDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="IssueUpdateInfoDialog.resx">
-      <DependentUpon>IssueUpdateInfoDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IssueUpdatePage.resx">
       <DependentUpon>IssueUpdatePage.cs</DependentUpon>
