@@ -262,7 +262,7 @@ namespace Gurtle
                                 issue.Issue.Id,
                                 issue.Issue.Summary));
 
-                            UpdateIssue(project.Name, issue, credential, form.ReportDetailLine);
+                            UpdateIssue(project, issue, credential, form.ReportDetailLine);
                             updates.RemoveAt(0);
 
                             form.ReportProgress((int)((startCount - updates.Count) * 100.0 / startCount));
@@ -338,134 +338,10 @@ namespace Gurtle
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private static void UpdateIssue(string project, IssueUpdate issue, NetworkCredential credential,
+        private static void UpdateIssue(GoogleCodeProject project, IssueUpdate issue, NetworkCredential credential,
             Action<string> stdout)
         {
-            UpdateIssue(project, issue, credential, stdout, stdout);
-        }
-
-        private static void UpdateIssue(string project, IssueUpdate update, NetworkCredential credential,
-            Action<string> stdout, Action<string> stderr)
-        {
-            string commentPath = null;
-
-            var comment = update.Comment;
-            if (comment.Length > 0)
-            {
-                if (comment.IndexOfAny(new[] { '\r', '\n', '\f' }) >= 0)
-                {
-                    commentPath = Path.GetTempFileName();
-                    File.WriteAllText(commentPath, comment, Encoding.UTF8);
-                    comment = "@" + commentPath;
-                }
-                else if (comment[0] == '@')
-                {
-                    comment = "@" + comment;
-                }
-            }
-
-            try
-            {
-                var commandLine = Environment.GetEnvironmentVariable("GURTLE_ISSUE_UPDATE_CMD")
-                                  ?? string.Empty;
-
-                stderr("GURTLE_ISSUE_UPDATE_CMD: " + commandLine);
-
-                var args = CommandLineToArgs(commandLine);
-                var command = args.First();
-
-                for (var i = 0; i < args.Length; i++)
-                    stderr(string.Format("[{0}]: {1}", i, args[i]));
-
-                args = args.Skip(1)
-                           .Select(arg => arg.FormatWith(CultureInfo.InvariantCulture, new
-                           {
-                               credential.UserName,
-                               credential.Password,
-                               Project = project,
-                               Issue = update.Issue,
-                               Status = update.Status,
-                               Comment = comment,
-                           }))
-                           .Select(arg => EncodeCommandLineArg(arg))
-                           .ToArray();
-
-                var formattedCommandLineArgs = string.Join(" ", args);
-                stderr(formattedCommandLineArgs.Replace(credential.Password, "**********"));
-
-                using (var process = Process.Start(new ProcessStartInfo
-                {
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    FileName = command,
-                    Arguments = formattedCommandLineArgs,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                }))
-                {
-                    Debug.Assert(process != null);
-
-                    stderr("PID: " + process.Id);
-
-                    process.OutputDataReceived += (sender, e) => stdout(e.Data);
-                    process.ErrorDataReceived += (sender, e) => stderr(e.Data);
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-
-                    process.WaitForExit();
-
-                    if (process.ExitCode != 0)
-                    {
-                        throw new Exception(
-                            string.Format("Issue update command failed with an exit code of {0}.",
-                            process.ExitCode));
-                    }
-                }
-
-            }
-            finally
-            {
-                if (!string.IsNullOrEmpty(commentPath) && File.Exists(commentPath))
-                    File.Delete(commentPath);
-            }
-        }
-
-        private static string EncodeCommandLineArg(string str)
-        {
-            return string.IsNullOrEmpty(str)
-                 ? "\"\""
-                 : str.IndexOfAny(new[] { ' ', '\"' }) >= 0
-                 ? "\"" + (str).Replace("\"", "\\\"") + "\""
-                 : str;
-        }
-
-        [DllImport("shell32.dll", SetLastError = true)]
-        static extern IntPtr CommandLineToArgvW(
-            [MarshalAs(UnmanagedType.LPWStr)] string lpCmdLine, out int pNumArgs);
-
-        internal static string[] CommandLineToArgs(string commandLine)
-        {
-            int argc;
-            var argv = CommandLineToArgvW(commandLine, out argc);
-
-            if (argv == IntPtr.Zero)
-                throw new Win32Exception();
-
-            try
-            {
-                var args = new string[argc];
-                for (var i = 0; i < args.Length; i++)
-                {
-                    var p = Marshal.ReadIntPtr(argv, i * IntPtr.Size);
-                    args[i] = Marshal.PtrToStringUni(p);
-                }
-
-                return args;
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(argv);
-            }
+            project.UpdateIssue(issue, credential, stdout, stdout);
         }
     }
 }

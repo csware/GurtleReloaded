@@ -34,6 +34,7 @@ namespace Gurtle
     using System.Linq;
     using System.Net;
     using System.IO;
+    using System.Text;
     using System.Windows.Forms;
     using System.Text.RegularExpressions;
 
@@ -318,6 +319,92 @@ namespace Gurtle
                     || field == IssueField.Stars
                     ? Gurtle.IssueBrowserDialog.SearchableStringSourceCharacteristics.None
                     : Gurtle.IssueBrowserDialog.SearchableStringSourceCharacteristics.Predefined));
+            }
+        }
+
+        internal void UpdateIssue(IssueUpdate update, NetworkCredential credential,
+            Action<string> stdout, Action<string> stderr)
+        {
+            string commentPath = null;
+
+            var comment = update.Comment;
+            if (comment.Length > 0)
+            {
+                if (comment.IndexOfAny(new[] { '\r', '\n', '\f' }) >= 0)
+                {
+                    commentPath = Path.GetTempFileName();
+                    File.WriteAllText(commentPath, comment, Encoding.UTF8);
+                    comment = "@" + commentPath;
+                }
+                else if (comment[0] == '@')
+                {
+                    comment = "@" + comment;
+                }
+            }
+
+            try
+            {
+                var commandLine = Environment.GetEnvironmentVariable("GURTLE_ISSUE_UPDATE_CMD")
+                                  ?? string.Empty;
+
+                stderr("GURTLE_ISSUE_UPDATE_CMD: " + commandLine);
+
+                var args = CommandLineUtils.CommandLineToArgs(commandLine);
+                var command = args.First();
+
+                for (var i = 0; i < args.Length; i++)
+                    stderr(string.Format("[{0}]: {1}", i, args[i]));
+
+                args = args.Skip(1)
+                           .Select(arg => arg.FormatWith(CultureInfo.InvariantCulture, new
+                           {
+                               credential.UserName,
+                               credential.Password,
+                               Project = this,
+                               Issue = update.Issue,
+                               Status = update.Status,
+                               Comment = comment,
+                           }))
+                           .Select(arg => CommandLineUtils.EncodeCommandLineArg(arg))
+                           .ToArray();
+
+                var formattedCommandLineArgs = string.Join(" ", args);
+                stderr(formattedCommandLineArgs.Replace(credential.Password, "**********"));
+
+                using (var process = Process.Start(new ProcessStartInfo
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    FileName = command,
+                    Arguments = formattedCommandLineArgs,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                }))
+                {
+                    Debug.Assert(process != null);
+
+                    stderr("PID: " + process.Id);
+
+                    process.OutputDataReceived += (sender, e) => stdout(e.Data);
+                    process.ErrorDataReceived += (sender, e) => stderr(e.Data);
+                    process.BeginOutputReadLine();
+                    process.BeginErrorReadLine();
+
+                    process.WaitForExit();
+
+                    if (process.ExitCode != 0)
+                    {
+                        throw new Exception(
+                            string.Format("Issue update command failed with an exit code of {0}.",
+                            process.ExitCode));
+                    }
+                }
+
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(commentPath) && File.Exists(commentPath))
+                    File.Delete(commentPath);
             }
         }
     }

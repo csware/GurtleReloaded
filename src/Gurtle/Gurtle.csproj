@@ -68,6 +68,7 @@
     <Compile Include="CollectionItemBatchEventArgs.cs" />
     <Compile Include="CollectionItemEventArgs.cs" />
     <Compile Include="ComboBoxExtensions.cs" />
+    <Compile Include="CommandLineUtils.cs" />
     <Compile Include="CredentialsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
