@@ -59,9 +59,6 @@ namespace Gurtle.Providers.GoogleCode
             if (name == null) throw new ArgumentNullException("name");
             if (!IsValidProjectName(name)) throw new ArgumentException(null, "name");
 
-            Debug.Assert(name != null);
-            Debug.Assert(IsValidProjectName(name));
-
             Name = name;
             Url = FormatUrl(null);
             ClosedStatuses = new string[0];
