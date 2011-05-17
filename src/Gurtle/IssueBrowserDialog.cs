@@ -61,9 +61,11 @@ namespace Gurtle
         private readonly ListViewSorter<IssueListViewItem, Issue> _sorter;
         private readonly Font _deadFont;
 
-        public IssueBrowserDialog()
+        public IssueBrowserDialog(string projectName)
         {
             InitializeComponent();
+
+            _project = new GoogleCodeProject(projectName);
 
             _titleFormat = Text;
             _foundFormat = foundLabel.Text;
@@ -78,32 +80,16 @@ namespace Gurtle
 
             _deadFont = new Font(issueListView.Font, FontStyle.Strikeout);
 
-            _sorter = new ListViewSorter<IssueListViewItem, Issue>(issueListView, 
-                          item => item.Tag, 
-                          new Func<Issue, IComparable>[] {
-                              issue => (IComparable) issue.Id,
-                              issue => (IComparable) issue.Type,
-                              issue => (IComparable) issue.Status,
-                              issue => (IComparable) issue.Priority,
-                              issue => (IComparable) issue.Owner,
-                              issue => (IComparable) issue.Summary
-                          }
-                      );
+            _project.SetupListView(issueListView);
+            _sorter = _project.GenerateListViewSorter(issueListView);
+
             _sorter.AutoHandle();
             _sorter.SortByColumn(0);
 
             var searchSourceItems = searchFieldBox.Items;
             searchSourceItems.Add(new MultiFieldIssueSearchSource("All fields", MetaIssue.Properties));
 
-            foreach (IssueField field in Enum.GetValues(typeof(IssueField)))
-            {
-                searchSourceItems.Add(new SingleFieldIssueSearchSource(field.ToString(), MetaIssue.GetPropertyByField(field),
-                    field == IssueField.Summary
-                    || field == IssueField.Id
-                    || field == IssueField.Stars
-                    ? SearchableStringSourceCharacteristics.None
-                    : SearchableStringSourceCharacteristics.Predefined));
-            }
+            _project.FillSearchItems(searchSourceItems);
 
             searchFieldBox.SelectedIndex = 0;
 
@@ -522,12 +508,7 @@ namespace Gurtle
                         item.ForeColor = SystemColors.GrayText;
                     }
 
-                    var subItems = item.SubItems;
-                    subItems.Add(issue.Type);
-                    subItems.Add(issue.Status);
-                    subItems.Add(issue.Priority);
-                    subItems.Add(issue.Owner);
-                    subItems.Add(issue.Summary);
+                    _project.GeneratorSubItems(item, issue);
 
                     return item;
                 })
@@ -576,7 +557,7 @@ namespace Gurtle
         }
 
         [ Serializable, Flags ]
-        private enum SearchableStringSourceCharacteristics
+        internal enum SearchableStringSourceCharacteristics
         {
             None,
             Predefined
@@ -598,7 +579,7 @@ namespace Gurtle
         /// searchable string.
         /// </summary>
 
-        private abstract class IssueSearchSource : ISearchSourceStringProvider<Issue>
+        internal abstract class IssueSearchSource : ISearchSourceStringProvider<Issue>
         {
             private readonly string _label;
 
@@ -625,7 +606,7 @@ namespace Gurtle
         /// property of an <see cref="Issue"/> as the searchable string.
         /// </summary>
 
-        private sealed class SingleFieldIssueSearchSource : IssueSearchSource
+        internal sealed class SingleFieldIssueSearchSource : IssueSearchSource
         {
             private readonly IProperty<Issue> _property;
 

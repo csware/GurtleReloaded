@@ -34,6 +34,7 @@ namespace Gurtle
     using System.Linq;
     using System.Net;
     using System.IO;
+    using System.Windows.Forms;
     using System.Text.RegularExpressions;
 
     #endregion
@@ -253,6 +254,71 @@ namespace Gurtle
             pager(start);
 
             return client.CancelAsync;
+        }
+
+        internal ListViewSorter<ListViewItem<Issue>, Issue> GenerateListViewSorter(ListView issueListView)
+        {
+            return new ListViewSorter<ListViewItem<Issue>, Issue>(issueListView,
+                                      item => item.Tag,
+                                      new Func<Issue, IComparable>[] {
+                              issue => (IComparable) issue.Id,
+                              issue => (IComparable) issue.Type,
+                              issue => (IComparable) issue.Status,
+                              issue => (IComparable) issue.Priority,
+                              issue => (IComparable) issue.Owner,
+                              issue => (IComparable) issue.Summary
+                          }
+                                  );
+        }
+
+        internal void GeneratorSubItems(ListViewItem<Issue> item, Issue issue)
+        {
+            var subItems = item.SubItems;
+            subItems.Add(issue.Type);
+            subItems.Add(issue.Status);
+            subItems.Add(issue.Priority);
+            subItems.Add(issue.Owner);
+            subItems.Add(issue.Summary);
+        }
+
+        internal void SetupListView(ListView issueListView)
+        {
+            System.Windows.Forms.ColumnHeader priorityColumn = new System.Windows.Forms.ColumnHeader();
+            System.Windows.Forms.ColumnHeader ownerColumn = new System.Windows.Forms.ColumnHeader();
+            System.Windows.Forms.ColumnHeader typeColumn = new System.Windows.Forms.ColumnHeader();
+            System.Windows.Forms.ColumnHeader statusColumn = new System.Windows.Forms.ColumnHeader();
+            System.Windows.Forms.ColumnHeader summaryColumn = new System.Windows.Forms.ColumnHeader();
+
+            typeColumn.Text = "Type";
+            typeColumn.Width = 100;
+            statusColumn.Text = "Status";
+            statusColumn.Width = 100;
+            priorityColumn.Text = "Priority";
+            priorityColumn.Width = 100;
+            ownerColumn.Text = "Owner";
+            ownerColumn.Width = 100;
+            summaryColumn.Text = "Summary";
+            summaryColumn.Width = 1000;
+
+            issueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            typeColumn,
+            statusColumn,
+            priorityColumn,
+            ownerColumn,
+            summaryColumn});
+        }
+
+        internal void FillSearchItems(ComboBox.ObjectCollection searchSourceItems)
+        {
+            foreach (IssueField field in Enum.GetValues(typeof(IssueField)))
+            {
+                searchSourceItems.Add(new Gurtle.IssueBrowserDialog.SingleFieldIssueSearchSource(field.ToString(), MetaIssue.GetPropertyByField(field),
+                    field == IssueField.Summary
+                    || field == IssueField.Id
+                    || field == IssueField.Stars
+                    ? Gurtle.IssueBrowserDialog.SearchableStringSourceCharacteristics.None
+                    : Gurtle.IssueBrowserDialog.SearchableStringSourceCharacteristics.Predefined));
+            }
         }
     }
 }

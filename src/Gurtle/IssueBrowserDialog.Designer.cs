@@ -42,11 +42,6 @@
             this.okButton = new System.Windows.Forms.Button();
             this.issueListView = new System.Windows.Forms.ListView();
             this.idColumn = new System.Windows.Forms.ColumnHeader();
-            this.typeColumn = new System.Windows.Forms.ColumnHeader();
-            this.statusColumn = new System.Windows.Forms.ColumnHeader();
-            this.priorityColumn = new System.Windows.Forms.ColumnHeader();
-            this.ownerColumn = new System.Windows.Forms.ColumnHeader();
-            this.summaryColumn = new System.Windows.Forms.ColumnHeader();
             this.foundLabel = new System.Windows.Forms.Label();
             this.searchFieldBox = new System.Windows.Forms.ComboBox();
             this.updateNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
@@ -165,13 +160,7 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.issueListView.CheckBoxes = true;
-            this.issueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.idColumn,
-            this.typeColumn,
-            this.statusColumn,
-            this.priorityColumn,
-            this.ownerColumn,
-            this.summaryColumn});
+            this.issueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {this.idColumn});
             this.issueListView.FullRowSelect = true;
             this.issueListView.GridLines = true;
             this.issueListView.HideSelection = false;
@@ -190,31 +179,6 @@
             // idColumn
             // 
             this.idColumn.Text = "ID";
-            // 
-            // typeColumn
-            // 
-            this.typeColumn.Text = "Type";
-            this.typeColumn.Width = 100;
-            // 
-            // statusColumn
-            // 
-            this.statusColumn.Text = "Status";
-            this.statusColumn.Width = 100;
-            // 
-            // priorityColumn
-            // 
-            this.priorityColumn.Text = "Priority";
-            this.priorityColumn.Width = 100;
-            // 
-            // ownerColumn
-            // 
-            this.ownerColumn.Text = "Owner";
-            this.ownerColumn.Width = 100;
-            // 
-            // summaryColumn
-            // 
-            this.summaryColumn.Text = "Summary";
-            this.summaryColumn.Width = 1000;
             // 
             // foundLabel
             // 
@@ -304,11 +268,6 @@
 
         private System.Windows.Forms.ListView issueListView;
         private System.Windows.Forms.ColumnHeader idColumn;
-        private System.Windows.Forms.ColumnHeader summaryColumn;
-        private System.Windows.Forms.ColumnHeader statusColumn;
-        private System.Windows.Forms.ColumnHeader priorityColumn;
-        private System.Windows.Forms.ColumnHeader ownerColumn;
-        private System.Windows.Forms.ColumnHeader typeColumn;
         private System.Windows.Forms.Button detailButton;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.Button okButton;

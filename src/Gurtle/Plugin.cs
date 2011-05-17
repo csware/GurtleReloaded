@@ -75,7 +75,7 @@ namespace Gurtle
 
                 IList<Issue> issues;
 
-                using (var dialog = new IssueBrowserDialog
+                using (var dialog = new IssueBrowserDialog(project)
                 {
                     ProjectName = project,
                     UserNamePattern = parameters.User,
