@@ -74,7 +74,7 @@ namespace Gurtle
                 if (project.Length == 0)
                     throw new ApplicationException("Missing Google Code project specification.");
 
-                initProject(parameters);
+                _project = parameters.Provider;
 
                 IList<Issue> issues;
 
@@ -342,11 +342,6 @@ namespace Gurtle
             Action<string> stdout)
         {
             project.UpdateIssue(issue, credential, stdout, stdout);
-        }
-
-        private void initProject(Parameters parameters)
-        {
-            _project = ProviderFactory.getProvider("GoogleCode", parameters.Project);
         }
     }
 }

@@ -42,6 +42,7 @@ namespace Gurtle.Providers
         Uri RevisionDetailUrl(int revision);
         void Load();
         event EventHandler Loaded;
+        string Name { get; }
         string ProjectName { get; }
         void Reload();
         bool IsLoaded { get; }

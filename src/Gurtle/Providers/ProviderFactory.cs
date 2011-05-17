@@ -31,8 +31,17 @@ namespace Gurtle.Providers
     {
         public static IProvider getProvider(string provider, string projectName)
         {
-            // DUMMY
-            return new GoogleCode.GoogleCodeProject(projectName);
+            if (provider == null)
+            {
+                throw new ArgumentException(null, "Provider missing");
+            }
+            switch (provider.ToLower())
+            {
+                case "googlecode":
+                    return new GoogleCode.GoogleCodeProject(projectName);
+                default:
+                    throw new ArgumentException("Provider invalid", provider);
+            }
         }
     }
 }

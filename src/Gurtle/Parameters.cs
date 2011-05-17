@@ -2,9 +2,11 @@
 //
 // Gurtle - IBugTraqProvider for Google Code
 // Copyright (c) 2008, 2009 Atif Aziz. All rights reserved.
+// Copyright (c) 2011 Sven Strickroth. All rights reserved.
 //
 //  Author(s):
 //
+//      Sven Strickroth, <email@cs-ware.de>
 //      Atif Aziz, http://www.raboof.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +27,7 @@ namespace Gurtle
 {
     #region Imports
 
+    using Gurtle.Providers;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -35,6 +38,7 @@ namespace Gurtle
     [ Serializable ]
     public sealed class Parameters
     {
+        private IProvider _provider;
         private string _project;
         private string _status;
         private string _user;
@@ -56,10 +60,11 @@ namespace Gurtle
             {
                 parameters = new Parameters
                 {
-                    Project = dict.TryPop("project"),
+                    _provider = Providers.ProviderFactory.getProvider(dict.TryPop("provider"), dict.TryPop("project")),
                     User = dict.TryPop("user"),
                     Status = dict.TryPop("status"),
                 };
+                parameters._project = parameters._provider.ProjectName;
             }
             catch (ArgumentException e)
             {
@@ -78,14 +83,21 @@ namespace Gurtle
         public string Project
         {
             get { return _project ?? string.Empty; }
-            
+
             set
             {
-                if (!string.IsNullOrEmpty(value) && !Providers.GoogleCode.GoogleCodeProject.IsValidProjectName(value))
+                if (!string.IsNullOrEmpty(value))
                     throw new ArgumentException("Invalid project name.", "value");
+
+                Providers.ProviderFactory.getProvider(Provider.Name, value);
 
                 _project = value;
             }
+        }
+
+        internal IProvider Provider
+        {
+            get { return _provider; }
         }
 
         public string User

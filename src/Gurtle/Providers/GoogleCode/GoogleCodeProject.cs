@@ -48,6 +48,7 @@ namespace Gurtle.Providers.GoogleCode
 
         public event EventHandler Loaded;
 
+        public string Name { get { return "googlecode"; } }
         public string ProjectName { get; private set; }
         public Uri Url { get; private set; }
         public IList<string> ClosedStatuses { get; private set; }
@@ -57,7 +58,7 @@ namespace Gurtle.Providers.GoogleCode
         public GoogleCodeProject(string projectName)
         {
             if (projectName == null) throw new ArgumentNullException("projectName");
-            if (!IsValidProjectName(projectName)) throw new ArgumentException(null, "projectName");
+            if (!IsValidProjectName(projectName)) throw new ArgumentException("invalid project name.", projectName);
 
             ProjectName = projectName;
             Url = FormatUrl(null);
