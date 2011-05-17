@@ -160,6 +160,9 @@
     <Compile Include="Property.cs" />
     <Compile Include="Providers\IProvider.cs" />
     <Compile Include="Providers\ProviderFactory.cs" />
+    <Compile Include="Providers\trac\MetaIssue.cs" />
+    <Compile Include="Providers\trac\TracIssue.cs" />
+    <Compile Include="Providers\trac\TracProject.cs" />
     <Compile Include="RevisionEventArgs.cs" />
     <Compile Include="ScriptControl.cs" />
     <Compile Include="Settings.cs" />
