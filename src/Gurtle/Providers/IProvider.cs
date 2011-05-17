@@ -46,6 +46,7 @@ namespace Gurtle.Providers
         string ProjectName { get; }
         void Reload();
         bool IsLoaded { get; }
+        bool CanHandleIssueUpdates();
         Action DownloadIssues(string project, int start, bool includeClosedIssues, Func<IEnumerable<Issue>, bool> onData, Action<DownloadProgressChangedEventArgs> onProgress, Action<bool, Exception> onCompleted);
         void UpdateIssue(IssueUpdate issue, System.Net.NetworkCredential credential, Action<string> stdout, Action<string> stdout_4);
         ListViewSorter<ListViewItem<Issue>, Issue> GenerateListViewSorter(ListView issueListView);

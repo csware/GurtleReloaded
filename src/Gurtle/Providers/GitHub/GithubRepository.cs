@@ -52,6 +52,11 @@ namespace Gurtle.Providers.GitHub
         public bool IsLoaded { get; private set;}
         public bool IsLoading { get { return false; } }
 
+        public bool CanHandleIssueUpdates()
+        {
+            return true;
+        }
+
         public GitHubRepository(string projectName)
         {
             if (projectName == null) throw new ArgumentNullException("projectName");

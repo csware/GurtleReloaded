@@ -49,6 +49,11 @@ namespace Gurtle.Providers.Trac
         public bool IsLoaded { get; private set; }
         public bool IsLoading { get { return false; } }
 
+        public bool CanHandleIssueUpdates()
+        {
+            return false;
+        }
+
         public TracProject(string projectName)
         {
             if (projectName == null) throw new ArgumentNullException("projectName");

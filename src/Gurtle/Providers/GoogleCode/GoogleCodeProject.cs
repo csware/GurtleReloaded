@@ -55,6 +55,16 @@ namespace Gurtle.Providers.GoogleCode
         public bool IsLoaded { get; private set; }
         public bool IsLoading { get { return _wc != null; } }
 
+        public bool CanHandleIssueUpdates()
+        {
+            // don't bother users with the issue update dialog if the
+            // env variable is not set.
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GURTLE_ISSUE_UPDATE_CMD")))
+                return false;
+
+            return true;
+        }
+
         public GoogleCodeProject(string projectName)
         {
             if (projectName == null) throw new ArgumentNullException("projectName");
@@ -349,11 +359,13 @@ namespace Gurtle.Providers.GoogleCode
                 for (var i = 0; i < args.Length; i++)
                     stderr(string.Format("[{0}]: {1}", i, args[i]));
 
+                var base64Password = Convert.ToBase64String(Encoding.UTF8.GetBytes(credential.Password));
+
                 args = args.Skip(1)
                            .Select(arg => arg.FormatWith(CultureInfo.InvariantCulture, new
                            {
                                credential.UserName,
-                               credential.Password,
+                               base64Password,
                                Project = this,
                                Issue = update.Issue,
                                Status = update.Status,
@@ -363,7 +375,7 @@ namespace Gurtle.Providers.GoogleCode
                            .ToArray();
 
                 var formattedCommandLineArgs = string.Join(" ", args);
-                stderr(formattedCommandLineArgs.Replace(credential.Password, "**********"));
+                stderr(formattedCommandLineArgs.Replace(base64Password, "**********"));
 
                 using (var process = Process.Start(new ProcessStartInfo
                 {
@@ -393,7 +405,6 @@ namespace Gurtle.Providers.GoogleCode
                             process.ExitCode));
                     }
                 }
-
             }
             finally
             {

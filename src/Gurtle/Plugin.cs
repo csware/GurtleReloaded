@@ -193,9 +193,7 @@ namespace Gurtle
             if (issues == null || issues.Count == 0)
                 return;
 
-            // don't bother users with the issue update dialog if the
-            // env variable is not set.
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GURTLE_ISSUE_UPDATE_CMD")))
+            if (!project.CanHandleIssueUpdates())
                 return;
 
             var settings = Properties.Settings.Default;
@@ -223,12 +221,9 @@ namespace Gurtle
                 if (updates.Count == 0)
                     break;
 
-                var credential = CredentialPrompt.Prompt(parentWindow, "Google Code", project.ProjectName + ".gccred");
+                var credential = CredentialPrompt.Prompt(parentWindow, project.Name, project.ProjectName + ".gccred");
                 if (credential == null)
                     continue;
-
-                credential = new NetworkCredential(credential.UserName,
-                    Convert.ToBase64String(Encoding.UTF8.GetBytes(credential.Password)));
 
                 using (var form = new WorkProgressForm
                 {
