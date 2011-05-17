@@ -25,6 +25,7 @@ namespace Gurtle
 {
     #region Imports
 
+    using Gurtle.Providers;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -50,7 +51,7 @@ namespace Gurtle
     public sealed class Plugin : IBugTraqProvider2
     {
         private IList<Issue> _issues;
-        private GoogleCodeProject _project;
+        private IProvider _project;
 
         public string GetCommitMessage(
             IntPtr hParentWnd,
@@ -73,11 +74,12 @@ namespace Gurtle
                 if (project.Length == 0)
                     throw new ApplicationException("Missing Google Code project specification.");
 
+                initProject(parameters);
+
                 IList<Issue> issues;
 
-                using (var dialog = new IssueBrowserDialog(project)
+                using (var dialog = new IssueBrowserDialog(_project)
                 {
-                    ProjectName = project,
                     UserNamePattern = parameters.User,
                     StatusPattern = parameters.Status,
                     UpdateCheckEnabled = true,
@@ -95,7 +97,6 @@ namespace Gurtle
                         return originalMessage;
 
                     _issues = issues;
-                    _project = dialog.Project;
                 }
 
                 var message = new StringBuilder(originalMessage);
@@ -191,7 +192,7 @@ namespace Gurtle
             return null;
         }
 
-        private static void OnCommitFinished(IWin32Window parentWindow, int revision, GoogleCodeProject project, ICollection<Issue> issues)
+        private static void OnCommitFinished(IWin32Window parentWindow, int revision, IProvider project, ICollection<Issue> issues)
         {
             if (project == null)
                 return;
@@ -215,9 +216,8 @@ namespace Gurtle
 
             while (updates.Count > 0)
             {
-                using (var dialog = new IssueUpdateDialog
+                using (var dialog = new IssueUpdateDialog(project)
                 {
-                    Project = project,
                     Issues = updates,
                     Revision = revision
                 })
@@ -338,10 +338,15 @@ namespace Gurtle
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private static void UpdateIssue(GoogleCodeProject project, IssueUpdate issue, NetworkCredential credential,
+        private static void UpdateIssue(IProvider project, IssueUpdate issue, NetworkCredential credential,
             Action<string> stdout)
         {
             project.UpdateIssue(issue, credential, stdout, stdout);
+        }
+
+        private void initProject(Parameters parameters)
+        {
+            _project = ProviderFactory.getProvider("GoogleCode", parameters.Project);
         }
     }
 }

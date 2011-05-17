@@ -1,6 +1,6 @@
 ﻿namespace Gurtle
 {
-    public partial class IssueBrowserDialog
+    internal partial class IssueBrowserDialog
     {
         /// <summary>
         /// Required designer variable.

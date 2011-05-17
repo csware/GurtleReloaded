@@ -25,6 +25,7 @@ namespace Gurtle
 {
     #region Imports
 
+    using Gurtle.Providers;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -34,29 +35,31 @@ namespace Gurtle
 
     #endregion
 
-    public sealed partial class IssueUpdateDialog : Form
+    internal sealed partial class IssueUpdateDialog : Form
     {
-        private GoogleCodeProject _project;
+        private IProvider _project;
         private readonly string _titleFormat;
         private int _revision;
 
-        public IssueUpdateDialog()
+        public IssueUpdateDialog(IProvider project)
         {
             InitializeComponent();
 
+            _project = project;
+
             _titleFormat = Text;
+
+            UpdateTitle();
         }
 
         public string ProjectName
         {
             get { return Project != null ? Project.Name : string.Empty; }
-            set { Project = new GoogleCodeProject(value); }
         }
 
-        internal GoogleCodeProject Project
+        internal IProvider Project
         {
             get { return _project; }
-            set { _project = value; UpdateTitle(); }
         }
 
         private void UpdateTitle()

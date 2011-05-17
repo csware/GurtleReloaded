@@ -82,7 +82,7 @@
     <Compile Include="DelegatingComparer.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="DownloadStringCompletedEventArgs.cs" />
-    <Compile Include="GoogleCodeProject.cs" />
+    <Compile Include="Providers\GoogleCode\GoogleCodeProject.cs" />
     <Compile Include="IBugTraqProvider.cs" />
     <Compile Include="IBugTraqProvider2.cs" />
     <Compile Include="ISingletonScopeHelper.cs" />
@@ -151,6 +151,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Property.cs" />
+    <Compile Include="Providers\IProvider.cs" />
+    <Compile Include="Providers\ProviderFactory.cs" />
     <Compile Include="RevisionEventArgs.cs" />
     <Compile Include="ScriptControl.cs" />
     <Compile Include="Settings.cs" />

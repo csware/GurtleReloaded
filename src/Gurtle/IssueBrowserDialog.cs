@@ -25,6 +25,7 @@ namespace Gurtle
 {
     #region Imports
 
+    using Gurtle.Providers;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -42,9 +43,9 @@ namespace Gurtle
 
     #endregion
 
-    public sealed partial class IssueBrowserDialog : Form
+    internal sealed partial class IssueBrowserDialog : Form
     {
-        private GoogleCodeProject _project;
+        private IProvider _project;
         private readonly string _titleFormat;
         private readonly string _foundFormat;
         private Action _aborter;
@@ -61,11 +62,11 @@ namespace Gurtle
         private readonly ListViewSorter<IssueListViewItem, Issue> _sorter;
         private readonly Font _deadFont;
 
-        public IssueBrowserDialog(string projectName)
+        public IssueBrowserDialog(IProvider project)
         {
             InitializeComponent();
 
-            _project = new GoogleCodeProject(projectName);
+            _project = project;
 
             _titleFormat = Text;
             _foundFormat = foundLabel.Text;
@@ -100,18 +101,18 @@ namespace Gurtle
             includeClosedCheckBox.DataBindings.Add("Enabled", refreshButton, "Enabled");
 
             UpdateControlStates();
+
+            UpdateTitle();
         }
 
         public string ProjectName
         {
             get { return Project != null ? Project.Name : string.Empty; }
-            set { Project = new GoogleCodeProject(value); }
         }
 
-        internal GoogleCodeProject Project
+        internal IProvider Project
         {
             get { return _project; }
-            set { _project = value; UpdateTitle(); }
         }
 
         public string UserNamePattern

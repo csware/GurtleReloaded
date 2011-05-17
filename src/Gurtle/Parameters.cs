@@ -81,7 +81,7 @@ namespace Gurtle
             
             set
             {
-                if (!string.IsNullOrEmpty(value) && !GoogleCodeProject.IsValidProjectName(value))
+                if (!string.IsNullOrEmpty(value) && !Providers.GoogleCode.GoogleCodeProject.IsValidProjectName(value))
                     throw new ArgumentException("Invalid project name.", "value");
 
                 _project = value;

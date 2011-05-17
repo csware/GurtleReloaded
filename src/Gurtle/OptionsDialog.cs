@@ -39,7 +39,7 @@ namespace Gurtle
         public OptionsDialog()
         {
             InitializeComponent();
-            _linkLabel.Text = GoogleCodeProject.HostingUrl.ToString();
+            _linkLabel.Text = Providers.GoogleCode.GoogleCodeProject.HostingUrl.ToString();
         }
 
         public Parameters Parameters
@@ -76,12 +76,12 @@ namespace Gurtle
         private void ProjectNameBox_TextChanged(object sender, EventArgs e)
         {
             var projectName = _projectNameBox.Text;
-            var project = GoogleCodeProject.IsValidProjectName(projectName) 
-                        ? new GoogleCodeProject(projectName) 
+            var project = Providers.GoogleCode.GoogleCodeProject.IsValidProjectName(projectName)
+                        ? new Providers.GoogleCode.GoogleCodeProject(projectName) 
                         : null;
             
-            _okButton.Enabled = _testButton.Enabled = project != null;            
-            _linkLabel.Text = (project != null ? project.Url : GoogleCodeProject.HostingUrl).ToString();
+            _okButton.Enabled = _testButton.Enabled = project != null;
+            _linkLabel.Text = (project != null ? project.Url : Providers.GoogleCode.GoogleCodeProject.HostingUrl).ToString();
         }
 
         private void LinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -94,7 +94,7 @@ namespace Gurtle
             try
             {
                 var projectName = _projectNameBox.Text;
-                var url = new GoogleCodeProject(projectName).DnsUrl();
+                var url = new Providers.GoogleCode.GoogleCodeProject(projectName).DnsUrl();
                 using (CurrentCursorScope.EnterWait())
                     new WebClient().DownloadData(url);
                 var message = string.Format("The Google Code project '{0}' appears valid and reachable at {1}.", projectName, url);
