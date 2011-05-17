@@ -54,7 +54,7 @@ namespace Gurtle
 
         public string ProjectName
         {
-            get { return Project != null ? Project.Name : string.Empty; }
+            get { return Project != null ? Project.ProjectName : string.Empty; }
         }
 
         internal IProvider Project

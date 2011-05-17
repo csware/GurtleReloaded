@@ -29,10 +29,10 @@ namespace Gurtle.Providers
 {
     class ProviderFactory
     {
-        public static IProvider getProvider(string provider, string name)
+        public static IProvider getProvider(string provider, string projectName)
         {
             // DUMMY
-            return new GoogleCode.GoogleCodeProject(name);
+            return new GoogleCode.GoogleCodeProject(projectName);
         }
     }
 }

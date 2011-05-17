@@ -42,7 +42,7 @@ namespace Gurtle.Providers
         Uri RevisionDetailUrl(int revision);
         void Load();
         event EventHandler Loaded;
-        string Name { get; }
+        string ProjectName { get; }
         void Reload();
         bool IsLoaded { get; }
         Action DownloadIssues(string project, int start, bool includeClosedIssues, Func<IEnumerable<Issue>, bool> onData, Action<DownloadProgressChangedEventArgs> onProgress, Action<bool, Exception> onCompleted);

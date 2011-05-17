@@ -48,25 +48,25 @@ namespace Gurtle.Providers.GoogleCode
 
         public event EventHandler Loaded;
 
-        public string Name { get; private set; }
+        public string ProjectName { get; private set; }
         public Uri Url { get; private set; }
         public IList<string> ClosedStatuses { get; private set; }
         public bool IsLoaded { get; private set; }
         public bool IsLoading { get { return _wc != null; } }
 
-        public GoogleCodeProject(string name)
+        public GoogleCodeProject(string projectName)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (!IsValidProjectName(name)) throw new ArgumentException(null, "name");
+            if (projectName == null) throw new ArgumentNullException("projectName");
+            if (!IsValidProjectName(projectName)) throw new ArgumentException(null, "projectName");
 
-            Name = name;
+            ProjectName = projectName;
             Url = FormatUrl(null);
             ClosedStatuses = new string[0];
         }
 
         public Uri DnsUrl()
         {
-            return new Uri("http://" + Name + ".googlecode.com/");
+            return new Uri("http://" + ProjectName + ".googlecode.com/");
         }
 
         public Uri IssueDetailUrl(int id)
@@ -99,7 +99,7 @@ namespace Gurtle.Providers.GoogleCode
 
         private Uri FormatUrl(string relativeUrl)
         {
-            var baseUrl = new Uri("http://code.google.com/p/" + Name + "/");
+            var baseUrl = new Uri("http://code.google.com/p/" + ProjectName + "/");
             return string.IsNullOrEmpty(relativeUrl) ? baseUrl : new Uri(baseUrl, relativeUrl);
         }
 
