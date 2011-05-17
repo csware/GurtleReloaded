@@ -82,6 +82,8 @@
     <Compile Include="DelegatingComparer.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="DownloadStringCompletedEventArgs.cs" />
+    <Compile Include="Providers\GoogleCode\GoogleCodeIssue.cs" />
+    <Compile Include="Providers\GoogleCode\IssueTableParser.cs" />
     <Compile Include="Providers\GoogleCode\GoogleCodeProject.cs" />
     <Compile Include="IBugTraqProvider.cs" />
     <Compile Include="IBugTraqProvider2.cs" />
@@ -93,7 +95,6 @@
     <Compile Include="IssueBrowserDialog.Designer.cs">
       <DependentUpon>IssueBrowserDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="IssueField.cs" />
     <Compile Include="IssueUpdate.cs" />
     <Compile Include="IssueUpdateDialog.cs">
       <SubType>Form</SubType>
@@ -116,8 +117,7 @@
     <Compile Include="ParametersParseException.cs" />
     <Compile Include="ListViewItem.cs" />
     <Compile Include="ListViewSorter.cs" />
-    <Compile Include="MetaIssue.cs" />
-    <Compile Include="IssueTableParser.cs" />
+    <Compile Include="Providers\GoogleCode\MetaIssue.cs" />
     <Compile Include="ObservableCollection.cs" />
     <Compile Include="OleDispatchDriver.cs" />
     <Compile Include="Parameters.cs" />

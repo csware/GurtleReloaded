@@ -94,7 +94,7 @@ namespace Gurtle.Providers.GoogleCode
         {
             return FormatUrl("issues/csv?start={0}&colspec={1}{2}",
                        start.ToString(CultureInfo.InvariantCulture),
-                       string.Join("%20", Enum.GetNames(typeof(IssueField))),
+                       string.Join("%20", Enum.GetNames(typeof(GoogleCodeIssue.IssueField))),
                        includeClosed ? "&can=1" : string.Empty);
         }
 
@@ -215,7 +215,7 @@ namespace Gurtle.Providers.GoogleCode
             var client = new WebClient();
 
             Action<int> pager = next => client.DownloadStringAsync(
-                new GoogleCodeProject(project).IssuesCsvUrl(next, includeClosedIssues));
+                this.IssuesCsvUrl(next, includeClosedIssues));
 
             client.DownloadStringCompleted += (sender, args) =>
             {
@@ -258,8 +258,8 @@ namespace Gurtle.Providers.GoogleCode
                               issue => (IComparable) issue.Id,
                               issue => (IComparable) issue.Type,
                               issue => (IComparable) issue.Status,
-                              issue => (IComparable) issue.Priority,
-                              issue => (IComparable) issue.Owner,
+                              issue => (IComparable) ((GoogleCodeIssue)issue).Priority,
+                              issue => (IComparable) ((GoogleCodeIssue)issue).Owner,
                               issue => (IComparable) issue.Summary
                           }
                                   );
@@ -270,8 +270,8 @@ namespace Gurtle.Providers.GoogleCode
             var subItems = item.SubItems;
             subItems.Add(issue.Type);
             subItems.Add(issue.Status);
-            subItems.Add(issue.Priority);
-            subItems.Add(issue.Owner);
+            subItems.Add(((GoogleCodeIssue)issue).Priority);
+            subItems.Add(((GoogleCodeIssue)issue).Owner);
             subItems.Add(issue.Summary);
         }
 
@@ -304,12 +304,13 @@ namespace Gurtle.Providers.GoogleCode
 
         public void FillSearchItems(ComboBox.ObjectCollection searchSourceItems)
         {
-            foreach (IssueField field in Enum.GetValues(typeof(IssueField)))
+            searchSourceItems.Add(new Gurtle.IssueBrowserDialog.MultiFieldIssueSearchSource("All fields", MetaIssue.Properties));
+            foreach (GoogleCodeIssue.IssueField field in Enum.GetValues(typeof(GoogleCodeIssue.IssueField)))
             {
                 searchSourceItems.Add(new Gurtle.IssueBrowserDialog.SingleFieldIssueSearchSource(field.ToString(), MetaIssue.GetPropertyByField(field),
-                    field == IssueField.Summary
-                    || field == IssueField.Id
-                    || field == IssueField.Stars
+                    field == GoogleCodeIssue.IssueField.Summary
+                    || field == GoogleCodeIssue.IssueField.Id
+                    || field == GoogleCodeIssue.IssueField.Stars
                     ? Gurtle.IssueBrowserDialog.SearchableStringSourceCharacteristics.None
                     : Gurtle.IssueBrowserDialog.SearchableStringSourceCharacteristics.Predefined));
             }

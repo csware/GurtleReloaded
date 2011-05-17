@@ -21,7 +21,7 @@
 //
 #endregion
 
-namespace Gurtle
+namespace Gurtle.Providers.GoogleCode
 {
     #region Imports
 
@@ -36,10 +36,10 @@ namespace Gurtle
         public static readonly IProperty<Issue, int> Id = new Property<Issue, int>(issue => issue.Id, (issue, value) => issue.Id = value);
         public static readonly IProperty<Issue, string> Type = new Property<Issue, string>(issue => issue.Type, (issue, value) => issue.Type = value);
         public static readonly IProperty<Issue, string> Status = new Property<Issue, string>(issue => issue.Status, (issue, value) => issue.Status = value);
-        public static readonly IProperty<Issue, string> Milestone = new Property<Issue, string>(issue => issue.Milestone, (issue, value) => issue.Milestone = value);
-        public static readonly IProperty<Issue, string> Priority = new Property<Issue, string>(issue => issue.Priority, (issue, value) => issue.Priority = value);
-        public static readonly IProperty<Issue, string> Stars = new Property<Issue, string>(issue => issue.Stars, (issue, value) => issue.Stars = value);
-        public static readonly IProperty<Issue, string> Owner = new Property<Issue, string>(issue => issue.Owner, (issue, value) => issue.Owner = value);
+        public static readonly IProperty<Issue, string> Milestone = new Property<Issue, string>(issue => ((GoogleCodeIssue)issue).Milestone, (issue, value) => ((GoogleCodeIssue)issue).Milestone = value);
+        public static readonly IProperty<Issue, string> Priority = new Property<Issue, string>(issue => ((GoogleCodeIssue)issue).Priority, (issue, value) => ((GoogleCodeIssue)issue).Priority = value);
+        public static readonly IProperty<Issue, string> Stars = new Property<Issue, string>(issue => ((GoogleCodeIssue)issue).Stars, (issue, value) => ((GoogleCodeIssue)issue).Stars = value);
+        public static readonly IProperty<Issue, string> Owner = new Property<Issue, string>(issue => ((GoogleCodeIssue)issue).Owner, (issue, value) => ((GoogleCodeIssue)issue).Owner = value);
         public static readonly IProperty<Issue, string> Summary = new Property<Issue, string>(issue => issue.Summary, (issue, value) => issue.Summary = value);
 
         public static ReadOnlyCollection<IProperty<Issue>> Properties { get; private set; }
@@ -59,7 +59,7 @@ namespace Gurtle
             });
         }
 
-        public static IProperty<Issue> GetPropertyByField(IssueField field)
+        public static IProperty<Issue> GetPropertyByField(GoogleCodeIssue.IssueField field)
         {
             var index = (int) field;
 

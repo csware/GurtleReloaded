@@ -68,8 +68,6 @@ namespace Gurtle
         {
             if (parameters == null) throw new ArgumentNullException("parameters");
 
-            try
-            {
                 var project = parameters.Project;
                 if (project.Length == 0)
                     throw new ApplicationException("Missing Google Code project specification.");
@@ -114,12 +112,7 @@ namespace Gurtle
                 }
 
                 return message.ToString();
-            }
-            catch (Exception e)
-            {
-                ShowErrorBox(parentWindow, e);
-                throw;
-            }
+
         }
 
         public bool ValidateParameters(IntPtr hParentWnd, string parameters)

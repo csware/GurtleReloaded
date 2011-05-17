@@ -24,48 +24,41 @@
 namespace Gurtle
 {
     using System;
-    using System.Linq;
     using System.Text;
 
     [Serializable]
-    internal sealed class Issue
+    internal abstract class Issue
     {
         private string _type;
         private string _status;
-        private string _milestone;
-        private string _priority;
-        private string _stars;
-        private string _owner;
         private string _summary;
 
         public int Id { get; set; }
         public string Type { get { return _type ?? string.Empty; } set { _type = value; } }
         public string Status { get { return _status ?? string.Empty; } set { _status = value; } }
-        public string Milestone { get { return _milestone ?? string.Empty; } set { _milestone = value; } }
-        public string Priority { get { return _priority ?? string.Empty; } set { _priority = value; } }
-        public string Stars { get { return _stars ?? string.Empty; } set { _stars = value; } }
-        public string Owner { get { return _owner ?? string.Empty; } set { _owner = value; } }
         public string Summary { get { return _summary ?? string.Empty; } set { _summary = value; } }
 
         public bool HasOwner
         {
             get
             {
-                var owner = this.Owner;
-                return owner.Length > 0 && !owner.All(ch => ch == '-');
+                // depends on specific impl.
+                return true;
             }
         }
+
+        internal enum IssueField
+        {
+            Id,
+            Status,
+            Summary
+        };
 
         public override string ToString()
         {
             var builder = new StringBuilder();
             builder.Append("{ Id = ").Append(Id);
-            builder.Append(", Type = ").Append(Type);
             builder.Append(", Status = ").Append(Status);
-            builder.Append(", Milestone = ").Append(Milestone);
-            builder.Append(", Priority = ").Append(Priority);
-            builder.Append(", Stars = ").Append(Stars);
-            builder.Append(", Owner = ").Append(Owner);
             builder.Append(", Summary = ").Append(Summary);
             builder.Append(" }");
             return builder.ToString();

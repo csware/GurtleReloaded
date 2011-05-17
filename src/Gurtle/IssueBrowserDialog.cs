@@ -88,8 +88,6 @@ namespace Gurtle
             _sorter.SortByColumn(0);
 
             var searchSourceItems = searchFieldBox.Items;
-            searchSourceItems.Add(new MultiFieldIssueSearchSource("All fields", MetaIssue.Properties));
-
             _project.FillSearchItems(searchSourceItems);
 
             searchFieldBox.SelectedIndex = 0;
@@ -485,8 +483,8 @@ namespace Gurtle
             if (_closed)
                 return false; // orphaned notification
 
-            if (UserNamePattern.Length > 0)
-                issues = issues.Where(issue => Regex.IsMatch(issue.Owner, UserNamePattern));
+            /*if (UserNamePattern.Length > 0)
+                issues = issues.Where(issue => Regex.IsMatch(issue.Owner, UserNamePattern));*/
 
             if (StatusPattern.Length > 0)
                 issues = issues.Where(issue => Regex.IsMatch(issue.Status, StatusPattern));
@@ -637,7 +635,7 @@ namespace Gurtle
         /// the searchable string.
         /// </summary>
 
-        private sealed class MultiFieldIssueSearchSource : IssueSearchSource
+        internal sealed class MultiFieldIssueSearchSource : IssueSearchSource
         {
             private readonly IProperty<Issue>[] _properties;
 

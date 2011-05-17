@@ -21,7 +21,7 @@
 //
 #endregion
 
-namespace Gurtle
+namespace Gurtle.Providers.GoogleCode
 {
     #region Imports
 
@@ -43,17 +43,17 @@ namespace Gurtle
             | RegexOptions.IgnorePatternWhitespace
             | RegexOptions.Compiled);
 
-        public static IEnumerable<Issue> Parse(TextReader reader)
+        public static IEnumerable<GoogleCodeIssue> Parse(TextReader reader)
         {
             Debug.Assert(reader != null);
 
             var firstLine = reader.ReadLine();
             if (string.IsNullOrEmpty(firstLine))
-                return Enumerable.Empty<Issue>();
+                return Enumerable.Empty<GoogleCodeIssue>();
 
             var headers = ParseValues(firstLine).ToArray();
 
-            var bindings = Enum.GetNames(typeof(IssueField))
+            var bindings = Enum.GetNames(typeof(GoogleCodeIssue.IssueField))
                 .Select(n => Array.FindIndex(headers, h => n.Equals(h, StringComparison.OrdinalIgnoreCase)))
                 .Select(i => (Func<IEnumerable<string>, string>)(values => values.ElementAtOrDefault(i) ?? string.Empty))
                 .ToArray();
@@ -61,18 +61,18 @@ namespace Gurtle
             return //...
                 from line in reader.ReadLines()
                 let values = ParseValues(line).ToArray()
-                let id = ParseInteger(bindings[(int)IssueField.Id](values), CultureInfo.InvariantCulture)
+                let id = ParseInteger(bindings[(int)GoogleCodeIssue.IssueField.Id](values), CultureInfo.InvariantCulture)
                 where id != null && id.Value > 0
-                let issue = new Issue 
+                let issue = new GoogleCodeIssue 
                 {
-                    Id = id.Value, 
-                    Type = bindings[(int)IssueField.Type](values), 
-                    Status = bindings[(int)IssueField.Status](values), 
-                    Milestone = bindings[(int)IssueField.Milestone](values), 
-                    Priority = bindings[(int)IssueField.Priority](values), 
-                    Stars = bindings[(int)IssueField.Stars](values), 
-                    Owner = bindings[(int)IssueField.Owner](values), 
-                    Summary = bindings[(int)IssueField.Summary](values)
+                    Id = id.Value,
+                    Type = bindings[(int)GoogleCodeIssue.IssueField.Type](values),
+                    Status = bindings[(int)GoogleCodeIssue.IssueField.Status](values),
+                    Milestone = bindings[(int)GoogleCodeIssue.IssueField.Milestone](values),
+                    Priority = bindings[(int)GoogleCodeIssue.IssueField.Priority](values),
+                    Stars = bindings[(int)GoogleCodeIssue.IssueField.Stars](values),
+                    Owner = bindings[(int)GoogleCodeIssue.IssueField.Owner](values),
+                    Summary = bindings[(int)GoogleCodeIssue.IssueField.Summary](values)
                 }
                 select issue;
         }
