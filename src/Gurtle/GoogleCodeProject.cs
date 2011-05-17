@@ -82,11 +82,6 @@ namespace Gurtle
             return FormatUrl("source/detail?r={0}", revision);
         }
 
-        public Uri DownloadsListUrl()
-        {
-            return FormatUrl("downloads/list");
-        }
-
         public Uri IssueOptionsFeedUrl()
         {
             return FormatUrl("feeds/issueOptions");
