@@ -277,7 +277,7 @@ namespace Gurtle
             workStatus.Visible = true;
             statusLabel.Text = "Downloading\x2026";
 
-            _aborter = GoogleCodeProject.DownloadIssues(ProjectName, 0, includeClosedCheckBox.Checked,
+            _aborter = _project.DownloadIssues(ProjectName, 0, includeClosedCheckBox.Checked,
                                       OnIssuesDownloaded, 
                                       OnUpdateProgress, 
                                       OnDownloadComplete);

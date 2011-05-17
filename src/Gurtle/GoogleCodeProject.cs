@@ -206,7 +206,7 @@ namespace Gurtle
             return name.Length > 0 && Regex.IsMatch(name, @"^[a-z][a-z0-9-]*$");
         }
 
-        public static Action DownloadIssues(string project, int start, bool includeClosedIssues,
+        public Action DownloadIssues(string project, int start, bool includeClosedIssues,
                 Func<IEnumerable<Issue>, bool> onData,
                 Action<DownloadProgressChangedEventArgs> onProgress,
                 Action<bool, Exception> onCompleted)
