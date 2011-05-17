@@ -201,7 +201,7 @@ namespace Gurtle
             var updates = issues.Select(e => new IssueUpdate(e)
             {
                 Status = project.ClosedStatuses.FirstOrDefault(),
-                Comment = string.Format("{0} in r{1}.", GetIssueTypeAddress(e.Type), revision)
+                Comment = string.Format("{0} in rev. {1}.", GetIssueTypeAddress(e.Type), revision)
             })
             .ToList();
 
@@ -311,11 +311,12 @@ namespace Gurtle
 
             switch (issueType.ToLowerInvariant())
             {
-                case "defect": return "Fixes";
-                case "enhancement": return "Closes";
-                case "task": return "Closes";
-                case "review": return "Closes";
-                default: return "Resolves";
+                case "defect": return "Fixed";
+                case "bug": return "Fixed";
+                case "enhancement": return "Closed";
+                case "task": return "Closed";
+                case "review": return "Closed";
+                default: return "Resolved";
             }
         }
 
