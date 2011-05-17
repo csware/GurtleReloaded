@@ -157,7 +157,7 @@ namespace Gurtle
                 DownloadIssues();
                 Project.Load();
             }
-
+/*
             if (UpdateCheckEnabled)
             {
                 var updateClient = new WebClient();
@@ -183,8 +183,9 @@ namespace Gurtle
             }
 
             base.OnLoad(e);
+ */
         }
-
+/*
         private static Func<IWin32Window, DialogResult> OnVersionDataDownloaded(string data)
         {
             Debug.Assert(data != null);
@@ -251,6 +252,7 @@ namespace Gurtle
                 return reply;
             };
         }
+*/
 
         private void UpdateNotifyIcon_Click(object sender, EventArgs e)
         {
