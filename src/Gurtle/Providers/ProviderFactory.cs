@@ -39,6 +39,8 @@ namespace Gurtle.Providers
             {
                 case "googlecode":
                     return new GoogleCode.GoogleCodeProject(projectName);
+                case "github":
+                    return new GitHub.GitHubRepository(projectName);
                 default:
                     throw new ArgumentException("Provider invalid", provider);
             }

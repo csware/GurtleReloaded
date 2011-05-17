@@ -27,7 +27,7 @@ namespace Gurtle
     using System.Text;
 
     [Serializable]
-    internal abstract class Issue
+    internal class Issue
     {
         private string _type;
         private string _status;
