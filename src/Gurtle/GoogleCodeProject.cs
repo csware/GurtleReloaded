@@ -33,6 +33,7 @@ namespace Gurtle
     using System.Globalization;
     using System.Linq;
     using System.Net;
+    using System.IO;
     using System.Text.RegularExpressions;
 
     #endregion
@@ -206,6 +207,52 @@ namespace Gurtle
             //
 
             return name.Length > 0 && Regex.IsMatch(name, @"^[a-z][a-z0-9-]*$");
+        }
+
+        public static Action DownloadIssues(string project, int start, bool includeClosedIssues,
+                Func<IEnumerable<Issue>, bool> onData,
+                Action<DownloadProgressChangedEventArgs> onProgress,
+                Action<bool, Exception> onCompleted)
+        {
+            Debug.Assert(project != null);
+            Debug.Assert(onData != null);
+
+            var client = new WebClient();
+
+            Action<int> pager = next => client.DownloadStringAsync(
+                new GoogleCodeProject(project).IssuesCsvUrl(next, includeClosedIssues));
+
+            client.DownloadStringCompleted += (sender, args) =>
+            {
+                if (args.Cancelled || args.Error != null)
+                {
+                    if (onCompleted != null)
+                        onCompleted(args.Cancelled, args.Error);
+
+                    return;
+                }
+
+                var issues = IssueTableParser.Parse(new StringReader(args.Result)).ToArray();
+                var more = onData(issues);
+
+                if (more)
+                {
+                    start += issues.Length;
+                    pager(start);
+                }
+                else
+                {
+                    if (onCompleted != null)
+                        onCompleted(false, null);
+                }
+            };
+
+            if (onProgress != null)
+                client.DownloadProgressChanged += (sender, args) => onProgress(args);
+
+            pager(start);
+
+            return client.CancelAsync;
         }
     }
 }

@@ -289,7 +289,7 @@ namespace Gurtle
             workStatus.Visible = true;
             statusLabel.Text = "Downloading\x2026";
 
-            _aborter = DownloadIssues(ProjectName, 0, includeClosedCheckBox.Checked,
+            _aborter = GoogleCodeProject.DownloadIssues(ProjectName, 0, includeClosedCheckBox.Checked,
                                       OnIssuesDownloaded, 
                                       OnUpdateProgress, 
                                       OnDownloadComplete);
@@ -573,52 +573,6 @@ namespace Gurtle
 
             foundLabel.Text = string.Format(_foundFormat, issueListView.Items.Count.ToString("N0"));
             foundLabel.Visible = searchWords.Any();
-        }
-
-        private static Action DownloadIssues(string project, int start, bool includeClosedIssues,
-            Func<IEnumerable<Issue>, bool> onData, 
-            Action<DownloadProgressChangedEventArgs> onProgress,
-            Action<bool, Exception> onCompleted)
-        {
-            Debug.Assert(project != null);
-            Debug.Assert(onData != null);
-
-            var client = new WebClient();
-
-            Action<int> pager = next => client.DownloadStringAsync(
-                new GoogleCodeProject(project).IssuesCsvUrl(next, includeClosedIssues));
-
-            client.DownloadStringCompleted += (sender, args) =>
-            {
-                if (args.Cancelled || args.Error != null)
-                {
-                    if (onCompleted != null) 
-                        onCompleted(args.Cancelled, args.Error);
-                    
-                    return;
-                }
-
-                var issues = IssueTableParser.Parse(new StringReader(args.Result)).ToArray();
-                var more = onData(issues);
-
-                if (more)
-                {
-                    start += issues.Length;
-                    pager(start);
-                }
-                else
-                {
-                    if (onCompleted != null) 
-                        onCompleted(false, null);
-                }
-            };
-
-            if (onProgress != null)
-                client.DownloadProgressChanged += (sender, args) => onProgress(args);
-
-            pager(start);
-
-            return client.CancelAsync;
         }
 
         [ Serializable, Flags ]
