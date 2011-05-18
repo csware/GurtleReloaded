@@ -84,11 +84,6 @@ namespace Gurtle.Providers.GitHub
             return FormatUrl("issues/list/" + ProjectName + "/open");
         }        
 
-        public Uri DownloadsListUrl()
-        {
-            return FormatUrl("downloads/list");
-        }
-
         private Uri FormatUrl(string relativeUrl)
         {
             var baseUrl = new Uri("https://github.com/api/v2/json/");
