@@ -171,13 +171,13 @@ namespace Gurtle
             string commonRoot, string[] pathList,
             string logMessage, int revision)
         {
-            return OnCommitFinished(WindowHandleWrapper.TryCreate(hParentWnd), commonRoot, pathList, logMessage, revision);
+            return OnCommitFinished(WindowHandleWrapper.TryCreate(hParentWnd), commonRoot, pathList, logMessage, revision.ToString());
         }
 
         [ComVisible(false)]
         public string OnCommitFinished(IWin32Window parentWindow,
             string commonRoot, string[] pathList,
-            string logMessage, int revision)
+            string logMessage, string revision)
         {
             var project = _project;
             var issues = _issues;
@@ -185,7 +185,7 @@ namespace Gurtle
             return null;
         }
 
-        private static void OnCommitFinished(IWin32Window parentWindow, int revision, IProvider project, ICollection<Issue> issues)
+        private static void OnCommitFinished(IWin32Window parentWindow, string revision, IProvider project, ICollection<Issue> issues)
         {
             if (project == null)
                 return;

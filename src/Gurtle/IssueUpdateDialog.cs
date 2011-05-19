@@ -39,7 +39,7 @@ namespace Gurtle
     {
         private IProvider _project;
         private readonly string _titleFormat;
-        private int _revision;
+        private string _revision;
 
         public IssueUpdateDialog(IProvider project)
         {
@@ -69,7 +69,7 @@ namespace Gurtle
 
         internal IList<IssueUpdate> Issues { get; set; }
 
-        public int Revision
+        public string Revision
         {
             get { return _revision; }
             set { _revision = value; UpdateTitle(); }
