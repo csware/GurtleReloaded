@@ -25,25 +25,30 @@ namespace Gurtle
 {
     using System;
     using System.Text;
+    using System.Linq;
 
     [Serializable]
     internal class Issue
     {
         private string _type;
         private string _status;
+        private string _milestone;
+        private string _owner;
         private string _summary;
 
         public int Id { get; set; }
         public string Type { get { return _type ?? string.Empty; } set { _type = value; } }
         public string Status { get { return _status ?? string.Empty; } set { _status = value; } }
+        public string Milestone { get { return _milestone ?? string.Empty; } set { _milestone = value; } }
         public string Summary { get { return _summary ?? string.Empty; } set { _summary = value; } }
+        public string Owner { get { return _owner ?? string.Empty; } set { _owner = value; } }
 
         public bool HasOwner
         {
             get
             {
-                // depends on specific impl.
-                return true;
+                var owner = this.Owner;
+                return owner.Length > 0 && !owner.All(ch => ch == '-');
             }
         }
 
@@ -51,6 +56,8 @@ namespace Gurtle
         {
             Id,
             Status,
+            Milestone,
+            Owner,
             Summary
         };
 
@@ -59,6 +66,8 @@ namespace Gurtle
             var builder = new StringBuilder();
             builder.Append("{ Id = ").Append(Id);
             builder.Append(", Status = ").Append(Status);
+            builder.Append(", Milestone = ").Append(Milestone);
+            builder.Append(", Owner = ").Append(Owner);
             builder.Append(", Summary = ").Append(Summary);
             builder.Append(" }");
             return builder.ToString();

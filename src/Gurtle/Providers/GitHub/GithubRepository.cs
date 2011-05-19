@@ -81,7 +81,7 @@ namespace Gurtle.Providers.GitHub
 
         public Uri IssuesUrl()
         {
-            return FormatUrl("issues/list/" + ProjectName + "/open");
+            return new Uri("https://api.github.com/repos/" + ProjectName + "/issues");
         }        
 
         private Uri FormatUrl(string relativeUrl)
@@ -190,6 +190,7 @@ namespace Gurtle.Providers.GitHub
                                       new Func<Issue, IComparable>[] {
                                             issue => (IComparable) issue.Id,
                                             issue => (IComparable) issue.Status,
+                                            issue => (IComparable) issue.Owner,
                                             issue => (IComparable) issue.Summary
                                         });
         }
@@ -198,21 +199,26 @@ namespace Gurtle.Providers.GitHub
         {
             var subItems = item.SubItems;
             subItems.Add(issue.Status);
+            subItems.Add(issue.Owner);
             subItems.Add(issue.Summary);
         }
 
         public void SetupListView(ListView issueListView)
         {
             System.Windows.Forms.ColumnHeader statusColumn = new System.Windows.Forms.ColumnHeader();
+            System.Windows.Forms.ColumnHeader ownerColumn = new System.Windows.Forms.ColumnHeader();
             System.Windows.Forms.ColumnHeader summaryColumn = new System.Windows.Forms.ColumnHeader();
 
             statusColumn.Text = "Status";
             statusColumn.Width = 100;
+            ownerColumn.Text = "Owner";
+            ownerColumn.Width = 100;
             summaryColumn.Text = "Summary";
             summaryColumn.Width = 1000;
 
             issueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
                 statusColumn,
+                ownerColumn,
                 summaryColumn});
         }
 

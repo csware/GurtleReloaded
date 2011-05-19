@@ -5,7 +5,7 @@
 //
 //  Author(s):
 //
-//      Sven Strcirkoth <email@cs-ware.de>
+//      Sven Strickroth <email@cs-ware.de>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,12 +41,18 @@ namespace Gurtle.Providers.GitHub
             LinkedList<Issue> list = new LinkedList<Issue>();
 
             JsonData data = JsonMapper.ToObject(full);
-            for (int i = 0; i < data["issues"].Count; i++)
+            for (int i = 0; i < data.Count; i++)
             {
                 Issue issue = new Issue();
-                issue.Id = (int)data["issues"][i]["number"];
-                issue.Summary = (string)data["issues"][i]["title"];
-                issue.Status = (string)data["issues"][i]["state"];
+                issue.Id = (int)data[i]["number"];
+                issue.Summary = (string)data[i]["title"];
+                issue.Status = (string)data[i]["state"];
+                issue.Owner = (string)data[i]["assignee"]["login"];
+                if (data[i]["milestone"] != null)
+                {
+                    issue.Milestone = (string)data[i]["milestone"]["title"];
+                }
+                issue.Status = (string)data[i]["state"];
                 list.AddLast(issue);
             }
             return list;
