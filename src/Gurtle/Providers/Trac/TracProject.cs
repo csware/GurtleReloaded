@@ -42,7 +42,7 @@ namespace Gurtle.Providers.Trac
     {
         public event EventHandler Loaded;
 
-        public string Name { get { return "github"; } }
+        public string Name { get { return "trac"; } }
         public string ProjectName { get; private set; }
         public Uri Url { get; private set; }
         public IList<string> ClosedStatuses { get; private set; }
