@@ -392,6 +392,9 @@ namespace Gurtle
             definitions.AddRange(_issues
                 .Select(lvi => provider.ToSearchableString(lvi.Tag))
                 .Distinct(StringComparer.CurrentCultureIgnoreCase).ToArray());
+
+            // update search after changing field
+            SearchBox_TextChanged(null, null);
         }
 
         private void UpdateControlStates()
