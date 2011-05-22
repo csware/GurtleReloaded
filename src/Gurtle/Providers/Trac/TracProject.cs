@@ -145,7 +145,6 @@ namespace Gurtle.Providers.Trac
 
             var client = new WebClient();
             client.Headers.Add("Content-Type", "application/json");
-            client.UploadStringAsync(this.RPCUrl(), "{\"method\": \"ticket.query\", \"qstr\": \"status!=closed\"}");
 
             client.UploadStringCompleted += (sender, args) =>
             {
@@ -160,41 +159,101 @@ namespace Gurtle.Providers.Trac
                 JsonData data = JsonMapper.ToObject(args.Result);
                 if (data["result"].Count > 0)
                 {
+                    var client2 = new WebClient();
+                    client2.Headers.Add("Content-Type", "application/json");
+                    string rpcQuery = "{\"method\": \"system.multicall\", \"params\": [";
                     for (int i = 0; i < data["result"].Count - 1; i++)
                     {
-                        var client2 = new WebClient();
-                        client2.Headers.Add("Content-Type", "application/json");
-                        client2.UploadStringCompleted += (sender2, args2) =>
+                        if (i > 0)
                         {
-                            if (args2.Cancelled || args2.Error != null)
-                            {
-                                return;
-                            }
-
-                            JsonData issueData = JsonMapper.ToObject(args2.Result);
-                            TracIssue[] issues = new TracIssue[1];
-                            issues[0] = new TracIssue();
-                            issues[0].Id = (int)issueData["result"][0];
-                            if (issueData["result"][3].ToString().Contains("milestone"))
-                            {
-                                issues[0].Milestone = (string)issueData["result"][3]["milestone"];
-                            }
-                            issues[0].Owner = (string)issueData["result"][3]["owner"];
-                            issues[0].Type = (string)issueData["result"][3]["type"];
-                            issues[0].Priority = (string)issueData["result"][3]["priority"];
-                            issues[0].Status = (string)issueData["result"][3]["status"];
-                            issues[0].Summary = (string)issueData["result"][3]["summary"];
-                            onData(issues);
-                            if (onCompleted != null)
-                                onCompleted(false, null);
-                        };
-                        client2.UploadStringAsync(this.RPCUrl(), "{\"method\": \"ticket.get\", \"params\": [" + data["result"][i] + "]}");
+                            rpcQuery += ",";
+                        }
+                        rpcQuery += "{\"method\": \"ticket.get\", \"params\": [" + data["result"][i] + "]}";
                     }
+
+                    client2.UploadStringCompleted += (sender2, args2) =>
+                    {
+                        if (args2.Cancelled || args2.Error != null)
+                        {
+                            return;
+                        }
+
+                        int lastObjectStart = 0;
+                        int count = 0;
+                        bool inQuote = false;
+                        bool lastWasBackslash = false;
+                        for (int n = 1; n < args2.Result.Length; n++)
+                        {
+                            if (inQuote)
+                            {
+                                if (args2.Result[n] == '"' && !lastWasBackslash)
+                                {
+                                    inQuote = false;
+                                }
+                                else if (args2.Result[n] == '\\')
+                                {
+                                    lastWasBackslash = !lastWasBackslash;
+                                }
+                                else
+                                {
+                                    lastWasBackslash = false;
+                                }
+                            }
+                            else
+                            {
+                                if (args2.Result[n] == '"')
+                                {
+                                    inQuote = true;
+                                }
+                                else if (args2.Result[n] == '}')
+                                {
+                                    --count;
+                                    if (count == 0)
+                                    {
+                                        n++;
+                                        JsonData issueData = JsonMapper.ToObject(args2.Result.Substring(lastObjectStart, n - lastObjectStart));
+                                        TracIssue[] issues = new TracIssue[1];
+                                        issues[0] = new TracIssue();
+                                        issues[0].Id = (int)issueData["result"][0];
+                                        if (issueData["result"][3].ToString().Contains("milestone"))
+                                        {
+                                            issues[0].Milestone = (string)issueData["result"][3]["milestone"];
+                                        }
+                                        issues[0].Owner = (string)issueData["result"][3]["owner"];
+                                        issues[0].Type = (string)issueData["result"][3]["type"];
+                                        issues[0].Priority = (string)issueData["result"][3]["priority"];
+                                        issues[0].Status = (string)issueData["result"][3]["status"];
+                                        issues[0].Summary = (string)issueData["result"][3]["summary"];
+                                        onData(issues);
+                                    }
+                                }
+                                else if (args2.Result[n] == '{')
+                                {
+                                    if (count == 0)
+                                    {
+                                        lastObjectStart = n;
+                                    }
+                                    ++count;
+                                }
+                            }
+                        }
+
+                        if (onCompleted != null)
+                            onCompleted(false, null);
+                    };
+
+                    rpcQuery += "]}";
+                    client2.UploadStringAsync(this.RPCUrl(), rpcQuery);
+
+                    if (onProgress != null)
+                        client.DownloadProgressChanged += (sender2, args2) => onProgress(args2);
                 }
             };
 
             if (onProgress != null)
                 client.DownloadProgressChanged += (sender, args) => onProgress(args);
+
+            client.UploadStringAsync(this.RPCUrl(), "{\"method\": \"ticket.query\", \"qstr\": \"status!=closed\"}");
 
             return client.CancelAsync;
         }
