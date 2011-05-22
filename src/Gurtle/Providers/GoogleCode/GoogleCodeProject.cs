@@ -49,8 +49,18 @@ namespace Gurtle.Providers.GoogleCode
         public event EventHandler Loaded;
 
         public string Name { get { return "googlecode"; } }
-        public string ProjectName { get; private set; }
-        public Uri Url { get; private set; }
+        private string _projectName = null;
+        public string ProjectName
+        {
+            get { return _projectName; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("projectName");
+                if (!IsValidProjectName(value)) throw new ArgumentException("invalid project name.", value);
+                _projectName = value;
+            }
+        }
+        public Uri Url { get { return FormatUrl(null); } }
         public IList<string> ClosedStatuses { get; private set; }
         public bool IsLoaded { get; private set; }
         public bool IsLoading { get { return _wc != null; } }
@@ -65,18 +75,25 @@ namespace Gurtle.Providers.GoogleCode
             return true;
         }
 
+        public GoogleCodeProject()
+        {
+            commonConstructor();
+        }
+
+        private void commonConstructor()
+        {
+            ClosedStatuses = new string[0];
+        }
+
         public GoogleCodeProject(string projectName)
         {
-            if (projectName == null) throw new ArgumentNullException("projectName");
-            if (!IsValidProjectName(projectName)) throw new ArgumentException("invalid project name.", projectName);
-
             ProjectName = projectName;
-            Url = FormatUrl(null);
-            ClosedStatuses = new string[0];
+            commonConstructor();
         }
 
         public Uri DnsUrl()
         {
+            Debug.Assert(ProjectName != null);
             return new Uri("http://" + ProjectName + ".googlecode.com/");
         }
 
@@ -110,6 +127,7 @@ namespace Gurtle.Providers.GoogleCode
 
         private Uri FormatUrl(string relativeUrl)
         {
+            Debug.Assert(ProjectName != null);
             var baseUrl = new Uri("http://code.google.com/p/" + ProjectName + "/");
             return string.IsNullOrEmpty(relativeUrl) ? baseUrl : new Uri(baseUrl, relativeUrl);
         }
@@ -154,6 +172,7 @@ namespace Gurtle.Providers.GoogleCode
 
         public void Reload()
         {
+            Debug.Assert(ProjectName != null);
             if (IsLoading)
                 return;
 
