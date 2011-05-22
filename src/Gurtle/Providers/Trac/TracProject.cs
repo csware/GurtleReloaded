@@ -157,7 +157,14 @@ namespace Gurtle.Providers.Trac
                 }
 
                 JsonData data = JsonMapper.ToObject(args.Result);
-                if (data["result"].Count > 0)
+                if (data["error"] != null)
+                {
+                    if (onCompleted != null)
+                        onCompleted(false, new Exception((string)data["error"]["message"]));
+
+                    return;
+                }
+                else if (data["result"] != null && data["result"].Count > 0)
                 {
                     var client2 = new WebClient();
                     client2.Headers.Add("Content-Type", "application/json");
