@@ -128,11 +128,10 @@ namespace Gurtle.Providers.Trac
 
         public static bool IsValidProjectName(string name)
         {
-            return true;
             if (name == null)
                 throw new ArgumentNullException("name");
 
-            return name.Length > 0 && Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9-]*/[A-Za-z][A-Za-z0-9-]*$");
+            return name.Length > 0 && Regex.IsMatch(name, @"^https?://.*$");
         }
 
         public Action DownloadIssues(string project, int start, bool includeClosedIssues,
