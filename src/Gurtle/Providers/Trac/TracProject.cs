@@ -143,7 +143,7 @@ namespace Gurtle.Providers.Trac
             OnLoaded(null);
         }
 
-        public static bool IsValidProjectName(string name)
+        public bool IsValidProjectName(string name)
         {
             if (name == null)
                 throw new ArgumentNullException("name");

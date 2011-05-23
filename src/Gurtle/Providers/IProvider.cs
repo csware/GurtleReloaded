@@ -53,5 +53,6 @@ namespace Gurtle.Providers
         void FillSearchItems(ComboBox.ObjectCollection searchSourceItems);
         void GeneratorSubItems(ListViewItem<Issue> item, Issue issue);
         void SetupListView(ListView issueListView);
+        bool IsValidProjectName(string name);
     }
 }

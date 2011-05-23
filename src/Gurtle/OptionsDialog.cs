@@ -76,7 +76,7 @@ namespace Gurtle
         private void ProjectNameBox_TextChanged(object sender, EventArgs e)
         {
             var projectName = _projectNameBox.Text;
-            var project = Providers.GoogleCode.GoogleCodeProject.IsValidProjectName(projectName)
+            var project = new Providers.GoogleCode.GoogleCodeProject().IsValidProjectName(projectName)
                         ? new Providers.GoogleCode.GoogleCodeProject(projectName) 
                         : null;
             

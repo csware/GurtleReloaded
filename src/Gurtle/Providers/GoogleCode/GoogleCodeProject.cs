@@ -217,7 +217,7 @@ namespace Gurtle.Providers.GoogleCode
             _wc = wc;
         }
 
-        public static bool IsValidProjectName(string name)
+        public bool IsValidProjectName(string name)
         {
             if (name == null) 
                 throw new ArgumentNullException("name");
