@@ -184,14 +184,22 @@ namespace Gurtle.Providers.Trac
                 {
                     var client2 = new WebClient();
                     client2.Headers.Add("Content-Type", "application/json");
-                    string rpcQuery = "{\"method\": \"system.multicall\", \"params\": [";
+                    var jsonRPCQuery = new JsonWriter();
+                    jsonRPCQuery.WriteObjectStart();
+                    jsonRPCQuery.WritePropertyName("method");
+                    jsonRPCQuery.Write("system.multicall");
+                    jsonRPCQuery.WritePropertyName("params");
+                    jsonRPCQuery.WriteArrayStart();
                     for (int i = 0; i < data["result"].Count - 1; i++)
                     {
-                        if (i > 0)
-                        {
-                            rpcQuery += ",";
-                        }
-                        rpcQuery += "{\"method\": \"ticket.get\", \"params\": [" + data["result"][i] + "]}";
+                        jsonRPCQuery.WriteObjectStart();
+                        jsonRPCQuery.WritePropertyName("method");
+                        jsonRPCQuery.Write("ticket.get");
+                        jsonRPCQuery.WritePropertyName("params");
+                        jsonRPCQuery.WriteArrayStart();
+                        jsonRPCQuery.Write((int)data["result"][i]);
+                        jsonRPCQuery.WriteArrayEnd();
+                        jsonRPCQuery.WriteObjectEnd();
                     }
 
                     client2.UploadStringCompleted += (sender2, args2) =>
@@ -265,8 +273,9 @@ namespace Gurtle.Providers.Trac
                             onCompleted(false, null);
                     };
 
-                    rpcQuery += "]}";
-                    client2.UploadStringAsync(this.RPCUrl(), rpcQuery);
+                    jsonRPCQuery.WriteArrayEnd();
+                    jsonRPCQuery.WriteObjectEnd();
+                    client2.UploadStringAsync(this.RPCUrl(), jsonRPCQuery.ToString());
 
                     if (onProgress != null)
                         client.DownloadProgressChanged += (sender2, args2) => onProgress(args2);
@@ -276,7 +285,15 @@ namespace Gurtle.Providers.Trac
             if (onProgress != null)
                 client.DownloadProgressChanged += (sender, args) => onProgress(args);
 
-            client.UploadStringAsync(this.RPCUrl(), "{\"method\": \"ticket.query\", \"qstr\": \"status!=closed\"}");
+            var jsonRPCQueryTicktes = new JsonWriter();
+            jsonRPCQueryTicktes.WriteObjectStart();
+            jsonRPCQueryTicktes.WritePropertyName("method");
+            jsonRPCQueryTicktes.Write("ticket.query");
+            jsonRPCQueryTicktes.WritePropertyName("qstr");
+            jsonRPCQueryTicktes.Write("status!=closed");
+            jsonRPCQueryTicktes.WriteObjectEnd();
+
+            client.UploadStringAsync(this.RPCUrl(), jsonRPCQueryTicktes.ToString());
 
             return client.CancelAsync;
         }
