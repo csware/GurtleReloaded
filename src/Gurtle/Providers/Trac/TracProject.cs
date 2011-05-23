@@ -32,7 +32,9 @@ namespace Gurtle.Providers.Trac
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
+    using System.Linq;
     using System.Net;
+    using System.Text;
     using System.Windows.Forms;
     using System.Text.RegularExpressions;
 
@@ -60,7 +62,7 @@ namespace Gurtle.Providers.Trac
 
         public bool CanHandleIssueUpdates()
         {
-            return false;
+            return true;
         }
 
         public TracProject()
@@ -70,7 +72,9 @@ namespace Gurtle.Providers.Trac
 
         private void commonConstructor()
         {
-            ClosedStatuses = new string[0];
+            ClosedStatuses = new string[1];
+            ClosedStatuses[0] = "fixed";
+            IsLoaded = true; 
         }
 
         public TracProject(string projectName)
@@ -365,6 +369,29 @@ namespace Gurtle.Providers.Trac
         public void UpdateIssue(IssueUpdate update, NetworkCredential credential,
             Action<string> stdout, Action<string> stderr)
         {
+            var client = new WebClient();
+            client.Headers.Add("Content-Type", "application/json");
+            client.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(credential.UserName + ":" + credential.Password)));
+
+            var jsonRPCQuery = new JsonWriter();
+            jsonRPCQuery.WriteObjectStart();
+            jsonRPCQuery.WritePropertyName("method");
+            jsonRPCQuery.Write("ticket.update");
+            jsonRPCQuery.WritePropertyName("params");
+            jsonRPCQuery.WriteArrayStart();
+            jsonRPCQuery.Write(update.Issue.Id);
+            jsonRPCQuery.Write(update.Comment);
+            jsonRPCQuery.WriteObjectStart();
+            jsonRPCQuery.WritePropertyName("action");
+            jsonRPCQuery.Write("resolve");
+            jsonRPCQuery.WritePropertyName("action_resolve_resolve_resolution");
+            jsonRPCQuery.Write("fixed");
+            jsonRPCQuery.WriteObjectEnd();
+            jsonRPCQuery.Write(true);
+            jsonRPCQuery.WriteArrayEnd();
+            jsonRPCQuery.WriteObjectEnd();
+
+            client.UploadString(this.RPCUrl(), jsonRPCQuery.ToString());
         }
     }
 }
