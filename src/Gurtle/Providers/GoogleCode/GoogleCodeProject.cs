@@ -1,10 +1,12 @@
 #region License, Terms and Author(s)
 //
 // Gurtle - IBugTraqProvider for Google Code
+// Copyright (c) 2011 Sven Strickroth. All rights reserved.
 // Copyright (c) 2008, 2009 Atif Aziz. All rights reserved.
 //
 //  Author(s):
 //
+//      Sven Strickroth, <email@cs-ware.de>
 //      Atif Aziz, http://www.raboof.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +39,8 @@ namespace Gurtle.Providers.GoogleCode
     using System.Text;
     using System.Windows.Forms;
     using System.Text.RegularExpressions;
+    using System.Xml;
+    using System.Xml.Schema;
 
     #endregion
 
@@ -45,6 +49,7 @@ namespace Gurtle.Providers.GoogleCode
         public static readonly Uri HostingUrl = new Uri("http://code.google.com/hosting/");
 
         private WebClient _wc;
+        private string token = null;
 
         public event EventHandler Loaded;
 
@@ -67,11 +72,6 @@ namespace Gurtle.Providers.GoogleCode
 
         public bool CanHandleIssueUpdates()
         {
-            // don't bother users with the issue update dialog if the
-            // env variable is not set.
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GURTLE_ISSUE_UPDATE_CMD")))
-                return false;
-
             return true;
         }
 
@@ -139,7 +139,7 @@ namespace Gurtle.Providers.GoogleCode
 
         public bool IsClosedStatus(string status)
         {
-            return !string.IsNullOrEmpty(status) 
+            return !string.IsNullOrEmpty(status)
                 && ClosedStatuses.Any(s => status.Equals(s, StringComparison.InvariantCultureIgnoreCase));
         }
 
@@ -157,7 +157,7 @@ namespace Gurtle.Providers.GoogleCode
 
         public void CancelLoad()
         {
-            if (!IsLoading) 
+            if (!IsLoading)
                 return;
             _wc.CancelAsync();
             _wc = null;
@@ -348,88 +348,68 @@ namespace Gurtle.Providers.GoogleCode
         public void UpdateIssue(IssueUpdate update, NetworkCredential credential,
             Action<string> stdout, Action<string> stderr)
         {
-            string commentPath = null;
-
-            var comment = update.Comment;
-            if (comment.Length > 0)
+            var client = new WebClient();
+            if (token == null)
             {
-                if (comment.IndexOfAny(new[] { '\r', '\n', '\f' }) >= 0)
+                System.Collections.Specialized.NameValueCollection data = new System.Collections.Specialized.NameValueCollection(1);
+                data.Add("accountType", "GOOGLE");
+                data.Add("Email", credential.UserName);
+                data.Add("Passwd", credential.Password);
+                data.Add("service", "code");
+                data.Add("source", "opensource-gurtlereloaded-1");
+
+                string[] result = ByteArrayToString(client.UploadValues("https://www.google.com/accounts/ClientLogin", data)).Split('\n');
+
+                for (int i = 0; i < result.Length; i++)
                 {
-                    commentPath = Path.GetTempFileName();
-                    File.WriteAllText(commentPath, comment, Encoding.UTF8);
-                    comment = "@" + commentPath;
-                }
-                else if (comment[0] == '@')
-                {
-                    comment = "@" + comment;
-                }
-            }
-
-            try
-            {
-                var commandLine = Environment.GetEnvironmentVariable("GURTLE_ISSUE_UPDATE_CMD")
-                                  ?? string.Empty;
-
-                stderr("GURTLE_ISSUE_UPDATE_CMD: " + commandLine);
-
-                var args = CommandLineUtils.CommandLineToArgs(commandLine);
-                var command = args.First();
-
-                for (var i = 0; i < args.Length; i++)
-                    stderr(string.Format("[{0}]: {1}", i, args[i]));
-
-                var base64Password = Convert.ToBase64String(Encoding.UTF8.GetBytes(credential.Password));
-
-                args = args.Skip(1)
-                           .Select(arg => arg.FormatWith(CultureInfo.InvariantCulture, new
-                           {
-                               credential.UserName,
-                               base64Password,
-                               Project = this,
-                               Issue = update.Issue,
-                               Status = update.Status,
-                               Comment = comment,
-                           }))
-                           .Select(arg => CommandLineUtils.EncodeCommandLineArg(arg))
-                           .ToArray();
-
-                var formattedCommandLineArgs = string.Join(" ", args);
-                stderr(formattedCommandLineArgs.Replace(base64Password, "**********"));
-
-                using (var process = Process.Start(new ProcessStartInfo
-                {
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    FileName = command,
-                    Arguments = formattedCommandLineArgs,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                }))
-                {
-                    Debug.Assert(process != null);
-
-                    stderr("PID: " + process.Id);
-
-                    process.OutputDataReceived += (sender, e) => stdout(e.Data);
-                    process.ErrorDataReceived += (sender, e) => stderr(e.Data);
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-
-                    process.WaitForExit();
-
-                    if (process.ExitCode != 0)
+                    if (result[i].StartsWith("auth=", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        throw new Exception(
-                            string.Format("Issue update command failed with an exit code of {0}.",
-                            process.ExitCode));
+                        token = result[i];
+                        break;
                     }
                 }
             }
-            finally
+
+            var doc = new XmlDocument();
+            XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
+            doc.AppendChild(dec);
+            XmlSchema schema = new XmlSchema();
+            schema.Namespaces.Add("xmlns", "http://www.w3.org/2005/Atom");
+            schema.Namespaces.Add("issues", "http://schemas.google.com/projecthosting/issues/2009");
+            doc.Schemas.Add(schema);
+            XmlElement entry = doc.CreateElement("entry", "http://www.w3.org/2005/Atom");
+            doc.AppendChild(entry);
+            XmlElement author = doc.CreateElement("author", "http://www.w3.org/2005/Atom");
+            entry.AppendChild(author);
+            XmlElement name = doc.CreateElement("name", "http://www.w3.org/2005/Atom");
+            name.InnerText = "empty";
+            author.AppendChild(name);
+            if (update.Comment.Length > 0)
             {
-                if (!string.IsNullOrEmpty(commentPath) && File.Exists(commentPath))
-                    File.Delete(commentPath);
+                XmlElement content = doc.CreateElement("content", "http://www.w3.org/2005/Atom");
+                XmlAttribute contentType = doc.CreateAttribute("type");
+                contentType.InnerText = "html";
+                content.Attributes.Append(contentType);
+                content.InnerText = update.Comment;
+                entry.AppendChild(content);
             }
+            XmlElement updates = doc.CreateElement("issues", "updates", "http://schemas.google.com/projecthosting/issues/2009");
+            entry.AppendChild(updates);
+            XmlElement status = doc.CreateElement("issues", "status", "http://schemas.google.com/projecthosting/issues/2009");
+            status.InnerText = update.Status;
+            updates.AppendChild(status);
+
+
+            client.Headers.Add("Content-Type", "application/atom+xml");
+            client.Headers.Add("Authorization", "GoogleLogin " + token);
+
+            client.UploadString(new Uri("https://code.google.com/feeds/issues/p/" + ProjectName + "/issues/"+ update.Issue.Id +"/comments/full"), doc.InnerXml);
+        }
+
+        private string ByteArrayToString(byte[] arr)
+        {
+            ASCIIEncoding enc = new ASCIIEncoding();
+            return enc.GetString(arr);
         }
     }
 }
