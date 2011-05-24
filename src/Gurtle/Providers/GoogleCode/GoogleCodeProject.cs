@@ -28,9 +28,7 @@ namespace Gurtle.Providers.GoogleCode
     #region Imports
 
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
@@ -48,7 +46,6 @@ namespace Gurtle.Providers.GoogleCode
     {
         public static readonly Uri HostingUrl = new Uri("http://code.google.com/hosting/");
 
-        private WebClient _wc;
         private string token = null;
 
         public event EventHandler Loaded;
@@ -68,7 +65,7 @@ namespace Gurtle.Providers.GoogleCode
         public Uri Url { get { return FormatUrl(null); } }
         public IList<string> ClosedStatuses { get; private set; }
         public bool IsLoaded { get; private set; }
-        public bool IsLoading { get { return _wc != null; } }
+        public bool IsLoading { get { return false; } }
 
         public bool CanHandleIssueUpdates()
         {
@@ -83,6 +80,7 @@ namespace Gurtle.Providers.GoogleCode
         private void commonConstructor()
         {
             ClosedStatuses = new string[0];
+            IsLoaded = true;
         }
 
         public GoogleCodeProject(string projectName)
@@ -106,11 +104,6 @@ namespace Gurtle.Providers.GoogleCode
         {
             return FormatUrl("source/detail?r={0}", revision);
         }
-
-        public Uri IssueOptionsFeedUrl()
-        {
-            return FormatUrl("feeds/issueOptions");
-        }        
 
         public Uri IssuesCsvUrl(int start)
         {
@@ -157,10 +150,6 @@ namespace Gurtle.Providers.GoogleCode
 
         public void CancelLoad()
         {
-            if (!IsLoading)
-                return;
-            _wc.CancelAsync();
-            _wc = null;
         }
 
         public void Load()
@@ -176,52 +165,15 @@ namespace Gurtle.Providers.GoogleCode
             if (IsLoading)
                 return;
 
-            var wc = new WebClient();
-
-            wc.DownloadStringCompleted += (sender, args) =>
-            {
-                _wc = null;
-
-                if (args.Cancelled || args.Error != null)
-                    return;
-
-                var contentType = wc.ResponseHeaders[HttpResponseHeader.ContentType]
-                                        .MaskNull().Split(new[] { ';' }, 2)[0];
-
-                var jsonContentTypes = new[] {
-                    "application/json", 
-                    "application/x-javascript", 
-                    "text/javascript",
-                };
-
-                if (!jsonContentTypes.Any(s => s.Equals(contentType, StringComparison.OrdinalIgnoreCase)))
-                    return;
-
-                using (var sc = new ScriptControl { Language = "JavaScript" })
-                {
-                    var data = sc.Eval("(" + args.Result + ")"); // TODO: JSON sanitization
-
-                    ClosedStatuses = new ReadOnlyCollection<string>(
-                        new OleDispatchDriver(data)
-                           .Get<IEnumerable>("closed")
-                           .Cast<object>()
-                           .Select(o => new OleDispatchDriver(o).Get<string>("name"))
-                           .ToArray());
-                }
-
-                IsLoaded = true;
-                OnLoaded();
-            };
-
-            wc.DownloadStringAsync(IssueOptionsFeedUrl());
-            _wc = wc;
+            IsLoaded = true;
+            OnLoaded();
         }
 
         public bool IsValidProjectName(string name)
         {
-            if (name == null) 
+            if (name == null)
                 throw new ArgumentNullException("name");
-            
+
             //
             // From http://code.google.com/hosting/createProject:
             //
