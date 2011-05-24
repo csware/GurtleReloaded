@@ -79,7 +79,13 @@ namespace Gurtle.Providers.GoogleCode
 
         private void commonConstructor()
         {
-            ClosedStatuses = new string[0];
+            ClosedStatuses = new string[6];
+            ClosedStatuses[0] = "Fixed";
+            ClosedStatuses[1] = "Verified";
+            ClosedStatuses[2] = "Invalid";
+            ClosedStatuses[3] = "Duplicate";
+            ClosedStatuses[4] = "WontFix";
+            ClosedStatuses[5] = "Done";
             IsLoaded = true;
         }
 

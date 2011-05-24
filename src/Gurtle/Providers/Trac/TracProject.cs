@@ -72,9 +72,13 @@ namespace Gurtle.Providers.Trac
 
         private void commonConstructor()
         {
-            ClosedStatuses = new string[1];
+            ClosedStatuses = new string[6];
             ClosedStatuses[0] = "fixed";
-            IsLoaded = true; 
+            ClosedStatuses[1] = "invalid";
+            ClosedStatuses[2] = "wontfix";
+            ClosedStatuses[4] = "duplicate";
+            ClosedStatuses[5] = "worksforme";
+            IsLoaded = true;
         }
 
         public TracProject(string projectName)
