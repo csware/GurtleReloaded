@@ -140,14 +140,13 @@ namespace Gurtle
         {
             var list = new List<KeyValuePair<string, string>>();
 
-            if (Project.Length > 0)
-                list.Add(Pair("project", Project));
+            list.Add(Pair("provider", Provider.Name));
 
-            if (User.Length > 0)
-                list.Add(Pair("user", User));
+            list.Add(Pair("project", Project));
 
-            if (Status.Length > 0)
-                list.Add(Pair("status", Status));
+            list.Add(Pair("user", User));
+
+            list.Add(Pair("status", Status));
 
             if (NoOnCommitFinished)
                 list.Add(Pair("noOnCommitFinished", "true"));
@@ -155,12 +154,9 @@ namespace Gurtle
             list.Add(Pair("commitTemplate", CommitTemplate));
 
             return string.Join(";",
-                Pairs(
-                    Pair("project", Project),
-                    Pair("user", User),
-                    Pair("status", Status))
+                list
                 .Where(e => e.Value.Length > 0)
-                .Select(e => e.Key + "=" + e.Value)
+                .Select(e => e.Key + "=" + (e.Value.Contains(';') || e.Value.Contains('"') ? '"' + e.Value.Replace("\"", "\\\"") + '"' : e.Value))
                 .ToArray());
         }
 
