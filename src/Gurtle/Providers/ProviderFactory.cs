@@ -47,5 +47,29 @@ namespace Gurtle.Providers
                     throw new ArgumentException("Provider invalid", provider);
             }
         }
+
+        public static IProvider getProvider(string provider)
+        {
+            if (provider == null)
+            {
+                throw new ArgumentException(null, "Provider missing");
+            }
+            switch (provider.ToLower())
+            {
+                case "googlecode":
+                    return new GoogleCode.GoogleCodeProject();
+                case "github":
+                    return new GitHub.GitHubRepository();
+                case "trac":
+                    return new Trac.TracProject();
+                default:
+                    throw new ArgumentException("Provider invalid", provider);
+            }
+        }
+
+        public static string[] getProviders()
+        {
+            return new string[] { "googlecode", "github", "trac" };
+        }
     }
 }

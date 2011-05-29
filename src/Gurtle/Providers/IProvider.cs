@@ -54,5 +54,6 @@ namespace Gurtle.Providers
         void GeneratorSubItems(ListViewItem<Issue> item, Issue issue);
         void SetupListView(ListView issueListView);
         bool IsValidProjectName(string name);
+        DialogResult ShowOptions(Parameters parameters);
     }
 }

@@ -369,5 +369,10 @@ namespace Gurtle.Providers.GoogleCode
             ASCIIEncoding enc = new ASCIIEncoding();
             return enc.GetString(arr);
         }
+
+        public DialogResult ShowOptions(Parameters parameters) {
+            OptionsDialog optionsDialog = new OptionsDialog { Parameters = parameters };
+            return optionsDialog.ShowDialog();
+        }
     }
 }

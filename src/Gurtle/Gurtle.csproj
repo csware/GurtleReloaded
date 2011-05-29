@@ -89,6 +89,12 @@
     <Compile Include="MetaIssue.cs" />
     <Compile Include="Providers\GitHub\GithubRepository.cs" />
     <Compile Include="Providers\GitHub\IssueTableParser.cs" />
+    <Compile Include="Providers\GitHub\OptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Providers\GitHub\OptionsDialog.designer.cs">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Providers\GoogleCode\GoogleCodeIssue.cs" />
     <Compile Include="Providers\GoogleCode\IssueTableParser.cs" />
     <Compile Include="Providers\GoogleCode\GoogleCodeProject.cs" />
@@ -145,6 +151,15 @@
     <EmbeddedResource Include="OptionsDialog.resx">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Providers\GitHub\OptionsDialog.resx">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Providers\GoogleCode\OptionsDialog.resx">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Providers\trac\OptionsDialog.resx">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WebProxyDialog.resx">
       <DependentUpon>WebProxyDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -158,9 +173,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Property.cs" />
+    <Compile Include="Providers\GoogleCode\OptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Providers\GoogleCode\OptionsDialog.Designer.cs">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Providers\IProvider.cs" />
     <Compile Include="Providers\ProviderFactory.cs" />
     <Compile Include="Providers\trac\MetaIssue.cs" />
+    <Compile Include="Providers\trac\OptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Providers\trac\OptionsDialog.designer.cs">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Providers\trac\TracIssue.cs" />
     <Compile Include="Providers\trac\TracProject.cs" />
     <Compile Include="RevisionEventArgs.cs" />

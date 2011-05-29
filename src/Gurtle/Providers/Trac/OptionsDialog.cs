@@ -1,12 +1,10 @@
 #region License, Terms and Author(s)
 //
 // Gurtle - IBugTraqProvider for Google Code
-// Copyright (c) 2011 Sven Strickroth. All rights reserved.
 // Copyright (c) 2008, 2009 Atif Aziz. All rights reserved.
 //
 //  Author(s):
 //
-//      Sven Strickroth, <email@cs-ware.de>
 //      Atif Aziz, http://www.raboof.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +20,7 @@
 // limitations under the License.
 //
 #endregion
-namespace Gurtle
+namespace Gurtle.Providers.Trac
 {
     #region Imports
 
@@ -31,7 +29,6 @@ namespace Gurtle
     using System.Net;
     using System.Windows.Forms;
     using Properties;
-    using Gurtle.Providers;
 
     #endregion
 
@@ -56,17 +53,12 @@ namespace Gurtle
             {
                 if (value == null) throw new ArgumentNullException("value");
                 _parameters = value;
-                _providers.Items.AddRange(Gurtle.Providers.ProviderFactory.getProviders());
-                if (_parameters.Provider != null)
-                {
-                    _providers.SelectedIndex = _providers.Items.IndexOf(_parameters.Provider.Name);
-                    _okButton.Enabled = _parameters.Project != null && _parameters.Project.Length > 0;
-                }
             }
         }
 
         protected override void OnLoad(EventArgs e)
         {
+            _projectNameBox.Text = Parameters.Project;
             base.OnLoad(e);
         }
 
@@ -76,33 +68,48 @@ namespace Gurtle
 
             if (DialogResult != DialogResult.OK)
                 return;
+
+            Parameters.Project = _projectNameBox.Text;    
+        }
+
+        private void ProjectNameBox_TextChanged(object sender, EventArgs e)
+        {
+            var projectName = _projectNameBox.Text;
+            var project = new TracProject().IsValidProjectName(projectName)
+                        ? new TracProject(projectName) 
+                        : null;
+            
+            _okButton.Enabled = _testButton.Enabled = project != null;
+        }
+
+        private void TestButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var projectName = _projectNameBox.Text;
+                var url = new Uri(projectName);
+                using (CurrentCursorScope.EnterWait())
+                    new WebClient().DownloadData(url);
+                
+                var message = string.Format("The trac project '{0}' appears valid and reachable.", projectName);
+                MessageBox.Show(message, "Test Passed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (WebException we)
+            {
+                MessageBox.Show(we.Message, "Test Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ResetSettings_Click(object sender, EventArgs e)
         {
-            var reply = MessageBox.Show(this,
-                            "Reset all settings to their defaults?", "Reset Settings",
+            var reply = MessageBox.Show(this, 
+                            "Reset all settings to their defaults?", "Reset Settings", 
                             MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (DialogResult.Yes != reply)
                 return;
 
             Settings.Default.Reset();
-        }
-
-        private void _providers_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            _configureProviderButton.Enabled = _providers.SelectedIndex >= 0;
-        }
-
-        private void _configureProviderButton_Click(object sender, EventArgs e)
-        {
-            IProvider provider = ProviderFactory.getProvider((string)_providers.Text);
-            Parameters.Provider = provider;
-            if (provider.ShowOptions(Parameters) == DialogResult.OK)
-            {
-                _okButton.Enabled = true;
-            }
         }
     }
 }

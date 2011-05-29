@@ -57,8 +57,12 @@ namespace Gurtle.Providers.GitHub
                 _projectName = value;
             }
         }
+        public Uri Url { get {
+            Debug.Assert(ProjectName != null);
+            return new Uri(HostingUrl, ProjectName); }
+        }
         public IList<string> ClosedStatuses { get; private set; }
-        public bool IsLoaded { get; private set;}
+        public bool IsLoaded { get; private set; }
         public bool IsLoading { get { return false; } }
 
         public bool CanHandleIssueUpdates()
@@ -97,7 +101,7 @@ namespace Gurtle.Providers.GitHub
         {
             Debug.Assert(ProjectName != null);
             return new Uri("https://api.github.com/repos/" + ProjectName + "/issues");
-        }        
+        }
 
         private Uri FormatUrl(string relativeUrl)
         {
@@ -114,7 +118,7 @@ namespace Gurtle.Providers.GitHub
         public bool IsClosedStatus(string status)
         {
             return !string.IsNullOrEmpty(status)
-                && status=="closed";
+                && status == "closed";
         }
 
         public void CancelLoad()
@@ -150,7 +154,7 @@ namespace Gurtle.Providers.GitHub
 
         public bool IsValidProjectName(string name)
         {
-            if (name == null) 
+            if (name == null)
                 throw new ArgumentNullException("name");
 
             return name.Length > 0 && Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9-]*/[A-Za-z][A-Za-z0-9-]*$");
@@ -266,6 +270,11 @@ namespace Gurtle.Providers.GitHub
             client.UploadValues(CommentIssueUrl(update.Issue.Id), data);
             data.Clear();
             client.UploadValues(CloseIssueUrl(update.Status, update.Issue.Id), data);
+        }
+
+        public DialogResult ShowOptions(Parameters parameters) {
+            OptionsDialog optionsDialog = new OptionsDialog { Parameters = parameters };
+            return optionsDialog.ShowDialog();
         }
     }
 }

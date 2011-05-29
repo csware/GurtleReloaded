@@ -397,5 +397,10 @@ namespace Gurtle.Providers.Trac
 
             client.UploadString(this.RPCUrl(), jsonRPCQuery.ToString());
         }
+
+        public DialogResult ShowOptions(Parameters parameters) {
+            OptionsDialog optionsDialog = new OptionsDialog { Parameters = parameters };
+            return optionsDialog.ShowDialog();
+        }
     }
 }

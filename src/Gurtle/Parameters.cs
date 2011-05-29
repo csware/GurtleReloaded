@@ -86,10 +86,10 @@ namespace Gurtle
 
             set
             {
-                if (!string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                     throw new ArgumentException("Invalid project name.", "value");
 
-                Providers.ProviderFactory.getProvider(Provider.Name, value);
+                _provider = Providers.ProviderFactory.getProvider(Provider.Name, value);
 
                 _project = value;
             }
@@ -97,6 +97,10 @@ namespace Gurtle
 
         internal IProvider Provider
         {
+            set
+            {
+                _provider = value;
+            }
             get { return _provider; }
         }
 
