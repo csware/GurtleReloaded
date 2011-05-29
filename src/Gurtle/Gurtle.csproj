@@ -72,7 +72,6 @@
     <Compile Include="CollectionItemBatchEventArgs.cs" />
     <Compile Include="CollectionItemEventArgs.cs" />
     <Compile Include="ComboBoxExtensions.cs" />
-    <Compile Include="CommandLineUtils.cs" />
     <Compile Include="CredentialsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,7 +131,6 @@
     <Compile Include="ListViewSorter.cs" />
     <Compile Include="Providers\GoogleCode\MetaIssue.cs" />
     <Compile Include="ObservableCollection.cs" />
-    <Compile Include="OleDispatchDriver.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -191,7 +189,6 @@
     <Compile Include="Providers\trac\TracIssue.cs" />
     <Compile Include="Providers\trac\TracProject.cs" />
     <Compile Include="RevisionEventArgs.cs" />
-    <Compile Include="ScriptControl.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SingletonScope.cs" />
     <Compile Include="StringExtensions.cs" />
