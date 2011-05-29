@@ -31,11 +31,11 @@ namespace Gurtle
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;    
+    using System.Linq;
 
     #endregion
 
-    [ Serializable ]
+    [Serializable]
     public sealed class Parameters
     {
         private IProvider _provider;
@@ -52,11 +52,11 @@ namespace Gurtle
             if (str.Length == 0)
                 return new Parameters();
 
-            var dict = ParsePairs(str.Split(';')).ToDictionary(
+            var dict = ParsePairs(str).ToDictionary(
                            p => p.Key, p => p.Value, StringComparer.OrdinalIgnoreCase);
 
             Parameters parameters;
-            
+
             try
             {
                 parameters = new Parameters
@@ -66,7 +66,7 @@ namespace Gurtle
                     Status = dict.TryPop("status"),
                 };
                 string noCommitFinished = dict.TryPop("noOnCommitFinished");
-                if (noCommitFinished != null && (noCommitFinished == "true" || noCommitFinished=="1"))
+                if (noCommitFinished != null && (noCommitFinished == "true" || noCommitFinished == "1"))
                 {
                     parameters.NoOnCommitFinished = true;
                 }
@@ -74,7 +74,7 @@ namespace Gurtle
             }
             catch (ArgumentException e)
             {
-                throw new ParametersParseException(e.Message, e);    
+                throw new ParametersParseException(e.Message, e);
             }
 
             if (dict.Any())
@@ -134,20 +134,20 @@ namespace Gurtle
 
             if (Project.Length > 0)
                 list.Add(Pair("project", Project));
-            
+
             if (User.Length > 0)
                 list.Add(Pair("user", User));
-            
+
             if (Status.Length > 0)
                 list.Add(Pair("status", Status));
 
             if (NoOnCommitFinished)
                 list.Add(Pair("noOnCommitFinished", "true"));
 
-            return string.Join(";", 
+            return string.Join(";",
                 Pairs(
-                    Pair("project", Project), 
-                    Pair("user", User), 
+                    Pair("project", Project),
+                    Pair("user", User),
                     Pair("status", Status))
                 .Where(e => e.Value.Length > 0)
                 .Select(e => e.Key + "=" + e.Value)
@@ -164,16 +164,94 @@ namespace Gurtle
             return new KeyValuePair<string, string>(key, value);
         }
 
-        private static IEnumerable<KeyValuePair<string, string>> ParsePairs(IEnumerable<string> parameters)
+        private static IEnumerable<KeyValuePair<string, string>> ParsePairs(string str)
         {
-            Debug.Assert(parameters != null);
+            Debug.Assert(str != null);
 
-            foreach (var parameter in parameters)
+            int lastObjectStart = 0;
+            bool inQuote = false;
+            bool valueIsInQuote = false;
+            bool inKey = true;
+            bool lastWasBackslash = false;
+            string lastKey = "";
+            for (int n = 0; n < str.Length; n++)
             {
-                var pair = parameter.Split(new[] { '=' }, 2);
-                var key = pair[0].Trim();
-                var value = pair.Length > 1 ? pair[1].Trim() : string.Empty;
-                yield return new KeyValuePair<string, string>(key, value);
+                if (inKey)
+                {
+                    if (str[n] == ';')
+                    {
+                        if (n - lastObjectStart == 0)
+                        {
+                            // handle: separator occours twice
+                            lastObjectStart++;
+                        }
+                        else
+                        {
+                            // separator occours in key name
+                            throw new ArgumentException("invalid char ';' in key found.");
+                        }
+                    }
+                    else if (str[n] == '=')
+                    {
+                        lastKey = str.Substring(lastObjectStart, n - lastObjectStart).Trim();
+                        lastObjectStart = n + 1;
+                        inKey = false;
+                    }
+                }
+                else
+                {
+                    if (inQuote)
+                    {
+                        if (str[n] == '"' && !lastWasBackslash)
+                        {
+                            inQuote = false;
+                            valueIsInQuote = true;
+                        }
+                        else if (str[n] == '\\')
+                        {
+                            lastWasBackslash = !lastWasBackslash;
+                        }
+                        else
+                        {
+                            lastWasBackslash = false;
+                        }
+                    }
+                    else
+                    {
+                        if (str[n] == '=')
+                        {
+                            throw new ArgumentException("invalid char '=' in value found.");
+                        }
+                        else if (str[n] == '"')
+                        {
+                            if (n - lastObjectStart > 0)
+                            {
+                                throw new ArgumentException("invalid char '\"' in value found.");
+                            }
+                            inQuote = true;
+                            lastObjectStart++;
+                        }
+                        else if (str[n] == ';')
+                        {
+                            yield return new KeyValuePair<string, string>(lastKey, str.Substring(lastObjectStart, n - lastObjectStart - (valueIsInQuote ? 1 : 0)).Trim());
+                            lastObjectStart = n+1;
+                            inKey = true;
+                            valueIsInQuote = false;
+                            lastKey = "";
+                        }
+                    }
+                }
+            }
+            if (str.Length - lastObjectStart > 0)
+            {
+                if (inQuote)
+                {
+                    throw new ArgumentException("string not closed");
+                }
+                else
+                {
+                    yield return new KeyValuePair<string, string>(lastKey, str.Substring(lastObjectStart, str.Length - lastObjectStart - (valueIsInQuote ? 1 : 0)).Trim());
+                }
             }
         }
     }
