@@ -32,11 +32,13 @@
             System.Windows.Forms.Label label1;
             System.Windows.Forms.ToolTip _toolTip;
             System.Windows.Forms.Button _resetButton;
+            this._commitTemplate = new System.Windows.Forms.ComboBox();
             this._okButton = new System.Windows.Forms.Button();
             this._cancelButton = new System.Windows.Forms.Button();
             this._providers = new System.Windows.Forms.ComboBox();
             this._configureProviderButton = new System.Windows.Forms.Button();
             this._handleOnCommitFinished = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             _toolTip = new System.Windows.Forms.ToolTip(this.components);
             _resetButton = new System.Windows.Forms.Button();
@@ -62,6 +64,21 @@
             _toolTip.SetToolTip(_resetButton, "Resets all settings to the defaults");
             _resetButton.UseVisualStyleBackColor = true;
             _resetButton.Click += new System.EventHandler(this.ResetSettings_Click);
+            // 
+            // _commitTemplate
+            // 
+            this._commitTemplate.FormattingEnabled = true;
+            this._commitTemplate.Items.AddRange(new object[] {
+            "(%TYPETEXT1% %TYPE% #%BUGID%: %SUMMARY%)",
+            "%TYPETEXT2% %TYPE% #%BUGID%: %SUMMARY%",
+            "Fixed issue #%BUGID%: %SUMMARY%"});
+            this._commitTemplate.Location = new System.Drawing.Point(12, 100);
+            this._commitTemplate.Name = "_commitTemplate";
+            this._commitTemplate.Size = new System.Drawing.Size(416, 21);
+            this._commitTemplate.TabIndex = 12;
+            _toolTip.SetToolTip(this._commitTemplate, "Commit text template. Use %BUGID% for one bug/ticket id, %SUMMARY, %TYPE% bug/tic" +
+                    "ket type; %TYPETEXT1% for Fixes/Resolves and %TYPETEXT2% for Rixed/Resolved base" +
+                    "d on bug/ticket type");
             // 
             // _okButton
             // 
@@ -90,7 +107,7 @@
             // 
             this._providers.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._providers.FormattingEnabled = true;
-            this._providers.Location = new System.Drawing.Point(12, 27);
+            this._providers.Location = new System.Drawing.Point(12, 26);
             this._providers.Name = "_providers";
             this._providers.Size = new System.Drawing.Size(277, 21);
             this._providers.TabIndex = 7;
@@ -117,6 +134,15 @@
             this._handleOnCommitFinished.Text = "Handle OnCommitFinished issue/ticket update";
             this._handleOnCommitFinished.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 82);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(114, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Commit text template:";
+            // 
             // OptionsDialog
             // 
             this.AcceptButton = this._okButton;
@@ -124,6 +150,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelButton;
             this.ClientSize = new System.Drawing.Size(440, 217);
+            this.Controls.Add(this._commitTemplate);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this._handleOnCommitFinished);
             this.Controls.Add(this._configureProviderButton);
             this.Controls.Add(this._providers);
@@ -150,5 +178,7 @@
         private System.Windows.Forms.ComboBox _providers;
         private System.Windows.Forms.Button _configureProviderButton;
         private System.Windows.Forms.CheckBox _handleOnCommitFinished;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox _commitTemplate;
     }
 }

@@ -63,6 +63,7 @@ namespace Gurtle
                     _okButton.Enabled = _parameters.Project != null && _parameters.Project.Length > 0;
                 }
                 _handleOnCommitFinished.Checked = !_parameters.NoOnCommitFinished;
+                _commitTemplate.Text = _parameters.CommitTemplate;
             }
         }
 
@@ -79,6 +80,7 @@ namespace Gurtle
                 return;
 
             Parameters.NoOnCommitFinished = !_handleOnCommitFinished.Checked;
+            _parameters.CommitTemplate = _commitTemplate.Text;
         }
 
         private void ResetSettings_Click(object sender, EventArgs e)

@@ -43,6 +43,7 @@ namespace Gurtle
         private string _status;
         private string _user;
         private bool _noOnCommitFinished = false;
+        private string _commitTemplate;
 
         public static Parameters Parse(string str)
         {
@@ -64,6 +65,7 @@ namespace Gurtle
                     _provider = Providers.ProviderFactory.getProvider(dict.TryPop("provider"), dict.TryPop("project")),
                     User = dict.TryPop("user"),
                     Status = dict.TryPop("status"),
+                    CommitTemplate = dict.TryPop("commitTemplate"),
                 };
                 string noCommitFinished = dict.TryPop("noOnCommitFinished");
                 if (noCommitFinished != null && (noCommitFinished == "true" || noCommitFinished == "1"))
@@ -128,6 +130,12 @@ namespace Gurtle
             set { _noOnCommitFinished = value; }
         }
 
+        public string CommitTemplate
+        {
+            get { return _commitTemplate ?? "Fixed issue #%BUGID%: %SUMMARY%"; }
+            set { _commitTemplate = value; }
+        }
+
         public override string ToString()
         {
             var list = new List<KeyValuePair<string, string>>();
@@ -143,6 +151,8 @@ namespace Gurtle
 
             if (NoOnCommitFinished)
                 list.Add(Pair("noOnCommitFinished", "true"));
+
+            list.Add(Pair("commitTemplate", CommitTemplate));
 
             return string.Join(";",
                 Pairs(
@@ -234,7 +244,7 @@ namespace Gurtle
                         else if (str[n] == ';')
                         {
                             yield return new KeyValuePair<string, string>(lastKey, str.Substring(lastObjectStart, n - lastObjectStart - (valueIsInQuote ? 1 : 0)).Trim());
-                            lastObjectStart = n+1;
+                            lastObjectStart = n + 1;
                             inKey = true;
                             valueIsInQuote = false;
                             lastKey = "";

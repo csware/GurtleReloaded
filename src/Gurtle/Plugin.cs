@@ -106,11 +106,13 @@ namespace Gurtle
 
             foreach (var issue in issues)
             {
-                message
-                    .Append("(")
-                    .Append(GetIssueTypeAddress(issue.Type)).Append(" issue #")
-                    .Append(issue.Id).Append(") : ")
-                    .AppendLine(issue.Summary);
+                var newLine = new StringBuilder(_parameters.CommitTemplate);
+                newLine.Replace("%TYPE%", issue.Type);
+                newLine.Replace("%SUMMARY%", issue.Summary);
+                newLine.Replace("%BUGID%", issue.Id.ToString());
+                newLine.Replace("%TYPETEXT1%", GetIssueTypeAddress(issue.Type) + "s");
+                newLine.Replace("%TYPETEXT2%", GetIssueTypeAddress(issue.Type) + "d");
+                message.Append(newLine + "\n");
             }
 
             return message.ToString();
@@ -315,12 +317,12 @@ namespace Gurtle
 
             switch (issueType.ToLowerInvariant())
             {
-                case "defect": return "Fixed";
-                case "bug": return "Fixed";
-                case "enhancement": return "Closed";
-                case "task": return "Closed";
-                case "review": return "Closed";
-                default: return "Resolved";
+                case "defect": return "Fixe";
+                case "bug": return "Fixe";
+                case "enhancement": return "Close";
+                case "task": return "Close";
+                case "review": return "Close";
+                default: return "Resolve";
             }
         }
 
