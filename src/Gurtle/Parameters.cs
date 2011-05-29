@@ -42,6 +42,7 @@ namespace Gurtle
         private string _project;
         private string _status;
         private string _user;
+        private bool _noOnCommitFinished = false;
 
         public static Parameters Parse(string str)
         {
@@ -64,6 +65,11 @@ namespace Gurtle
                     User = dict.TryPop("user"),
                     Status = dict.TryPop("status"),
                 };
+                string noCommitFinished = dict.TryPop("noOnCommitFinished");
+                if (noCommitFinished != null && (noCommitFinished == "true" || noCommitFinished=="1"))
+                {
+                    parameters.NoOnCommitFinished = true;
+                }
                 parameters._project = parameters._provider.ProjectName;
             }
             catch (ArgumentException e)
@@ -116,6 +122,12 @@ namespace Gurtle
             set { _status = value; }
         }
 
+        public bool NoOnCommitFinished
+        {
+            get { return _noOnCommitFinished; }
+            set { _noOnCommitFinished = value; }
+        }
+
         public override string ToString()
         {
             var list = new List<KeyValuePair<string, string>>();
@@ -128,6 +140,9 @@ namespace Gurtle
             
             if (Status.Length > 0)
                 list.Add(Pair("status", Status));
+
+            if (NoOnCommitFinished)
+                list.Add(Pair("noOnCommitFinished", "true"));
 
             return string.Join(";", 
                 Pairs(

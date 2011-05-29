@@ -182,6 +182,9 @@ namespace Gurtle
             string commonRoot, string[] pathList,
             string logMessage, string revision)
         {
+            if (_parameters.NoOnCommitFinished)
+                return null;
+
             OnCommitFinished(parentWindow, revision, _parameters.Provider, _issues);
             return null;
         }

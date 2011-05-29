@@ -36,6 +36,7 @@
             this._cancelButton = new System.Windows.Forms.Button();
             this._providers = new System.Windows.Forms.ComboBox();
             this._configureProviderButton = new System.Windows.Forms.Button();
+            this._handleOnCommitFinished = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             _toolTip = new System.Windows.Forms.ToolTip(this.components);
             _resetButton = new System.Windows.Forms.Button();
@@ -106,6 +107,16 @@
             this._configureProviderButton.UseVisualStyleBackColor = true;
             this._configureProviderButton.Click += new System.EventHandler(this._configureProviderButton_Click);
             // 
+            // _handleOnCommitFinished
+            // 
+            this._handleOnCommitFinished.AutoSize = true;
+            this._handleOnCommitFinished.Location = new System.Drawing.Point(12, 54);
+            this._handleOnCommitFinished.Name = "_handleOnCommitFinished";
+            this._handleOnCommitFinished.Size = new System.Drawing.Size(244, 17);
+            this._handleOnCommitFinished.TabIndex = 9;
+            this._handleOnCommitFinished.Text = "Handle OnCommitFinished issue/ticket update";
+            this._handleOnCommitFinished.UseVisualStyleBackColor = true;
+            // 
             // OptionsDialog
             // 
             this.AcceptButton = this._okButton;
@@ -113,6 +124,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._cancelButton;
             this.ClientSize = new System.Drawing.Size(440, 217);
+            this.Controls.Add(this._handleOnCommitFinished);
             this.Controls.Add(this._configureProviderButton);
             this.Controls.Add(this._providers);
             this.Controls.Add(_resetButton);
@@ -137,5 +149,6 @@
         private System.Windows.Forms.Button _cancelButton;
         private System.Windows.Forms.ComboBox _providers;
         private System.Windows.Forms.Button _configureProviderButton;
+        private System.Windows.Forms.CheckBox _handleOnCommitFinished;
     }
 }

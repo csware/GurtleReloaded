@@ -62,6 +62,7 @@ namespace Gurtle
                     _providers.SelectedIndex = _providers.Items.IndexOf(_parameters.Provider.Name);
                     _okButton.Enabled = _parameters.Project != null && _parameters.Project.Length > 0;
                 }
+                _handleOnCommitFinished.Checked = !_parameters.NoOnCommitFinished;
             }
         }
 
@@ -76,6 +77,8 @@ namespace Gurtle
 
             if (DialogResult != DialogResult.OK)
                 return;
+
+            Parameters.NoOnCommitFinished = !_handleOnCommitFinished.Checked;
         }
 
         private void ResetSettings_Click(object sender, EventArgs e)
