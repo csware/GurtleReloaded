@@ -1,10 +1,12 @@
 #region License, Terms and Author(s)
 //
 // Gurtle - IBugTraqProvider for Google Code
+// Copyright (c) 2011 Sven Strickroth. All rights reserved.
 // Copyright (c) 2008, 2009 Atif Aziz. All rights reserved.
 //
 //  Author(s):
 //
+//      Sven Strickroth, <email@cs-ware.de>
 //      Atif Aziz, http://www.raboof.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +53,7 @@ namespace Gurtle
     public sealed class Plugin : IBugTraqProvider2
     {
         private IList<Issue> _issues;
-        private IProvider _project;
+        private Parameters _parameters;
 
         public string GetCommitMessage(
             IntPtr hParentWnd,
@@ -68,50 +70,50 @@ namespace Gurtle
         {
             if (parameters == null) throw new ArgumentNullException("parameters");
 
-                var project = parameters.Project;
-                if (project.Length == 0)
-                    throw new ApplicationException("Missing Google Code project specification.");
+            _parameters = parameters;
 
-                _project = parameters.Provider;
+            var project = parameters.Project;
+            if (project.Length == 0)
+                throw new ApplicationException("Missing project specification.");
 
-                IList<Issue> issues;
+            IList<Issue> issues;
 
-                using (var dialog = new IssueBrowserDialog(_project)
-                {
-                    UserNamePattern = parameters.User,
-                    StatusPattern = parameters.Status,
-                    UpdateCheckEnabled = true,
-                })
-                {
-                    var settings = Properties.Settings.Default;
-                    new WindowSettings(settings, dialog);
+            using (var dialog = new IssueBrowserDialog(_parameters.Provider)
+            {
+                UserNamePattern = parameters.User,
+                StatusPattern = parameters.Status,
+                UpdateCheckEnabled = true,
+            })
+            {
+                var settings = Properties.Settings.Default;
+                new WindowSettings(settings, dialog);
 
-                    var reply = dialog.ShowDialog(parentWindow);
-                    issues = dialog.SelectedIssueObjects;
+                var reply = dialog.ShowDialog(parentWindow);
+                issues = dialog.SelectedIssueObjects;
 
-                    settings.Save();
+                settings.Save();
 
-                    if (reply != DialogResult.OK || issues.Count == 0)
-                        return originalMessage;
+                if (reply != DialogResult.OK || issues.Count == 0)
+                    return originalMessage;
 
-                    _issues = issues;
-                }
+                _issues = issues;
+            }
 
-                var message = new StringBuilder(originalMessage);
+            var message = new StringBuilder(originalMessage);
 
-                if (originalMessage.Length > 0 && !originalMessage.EndsWith("\n"))
-                    message.AppendLine();
+            if (originalMessage.Length > 0 && !originalMessage.EndsWith("\n"))
+                message.AppendLine();
 
-                foreach (var issue in issues)
-                {
-                    message
-                        .Append("(")
-                        .Append(GetIssueTypeAddress(issue.Type)).Append(" issue #")
-                        .Append(issue.Id).Append(") : ")
-                        .AppendLine(issue.Summary);
-                }
+            foreach (var issue in issues)
+            {
+                message
+                    .Append("(")
+                    .Append(GetIssueTypeAddress(issue.Type)).Append(" issue #")
+                    .Append(issue.Id).Append(") : ")
+                    .AppendLine(issue.Summary);
+            }
 
-                return message.ToString();
+            return message.ToString();
 
         }
 
@@ -140,6 +142,7 @@ namespace Gurtle
             bugIDOut = bugID;
 
             Parameters p = Parameters.Parse(parameters);
+            _parameters = p;
             if (p.Project.Length == 0)
             {
                 // we can extract the project name from the url, e.g.:
@@ -179,9 +182,7 @@ namespace Gurtle
             string commonRoot, string[] pathList,
             string logMessage, string revision)
         {
-            var project = _project;
-            var issues = _issues;
-            OnCommitFinished(parentWindow, revision, project, issues);
+            OnCommitFinished(parentWindow, revision, _parameters.Provider, _issues);
             return null;
         }
 
