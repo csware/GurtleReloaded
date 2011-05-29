@@ -50,7 +50,7 @@ namespace Gurtle
     [Guid("91974081-2DC7-4FB1-B3BE-0DE1C8D6CE4E")]
 #endif
     [ClassInterface(ClassInterfaceType.None)]
-    public sealed class Plugin : IBugTraqProvider2
+    public sealed class Plugin : IBugTraqProvider2String, IBugTraqProvider2
     {
         private IList<Issue> _issues;
         private Parameters _parameters;
@@ -179,6 +179,13 @@ namespace Gurtle
             return OnCommitFinished(WindowHandleWrapper.TryCreate(hParentWnd), commonRoot, pathList, logMessage, revision.ToString());
         }
 
+        public string OnCommitFinished(IntPtr hParentWnd,
+            string commonRoot, string[] pathList,
+            string logMessage, string revision)
+        {
+            return OnCommitFinished(WindowHandleWrapper.TryCreate(hParentWnd), commonRoot, pathList, logMessage, revision);
+        }
+
         [ComVisible(false)]
         public string OnCommitFinished(IWin32Window parentWindow,
             string commonRoot, string[] pathList,
@@ -188,6 +195,22 @@ namespace Gurtle
                 return null;
 
             OnCommitFinished(parentWindow, revision, _parameters.Provider, _issues);
+            return null;
+        }
+
+        [ComVisible(false)]
+        public string OnCommitFinished(string revision, Parameters parameters)
+        {
+            var project = parameters.Project;
+            if (project.Length == 0)
+                throw new ApplicationException("Missing project specification.");
+
+            _parameters = parameters;
+
+            if (_parameters.NoOnCommitFinished)
+                return null;
+
+            OnCommitFinished(null, revision, _parameters.Provider, _issues);
             return null;
         }
 

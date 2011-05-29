@@ -85,6 +85,7 @@
     <Compile Include="DelegatingComparer.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="DownloadStringCompletedEventArgs.cs" />
+    <Compile Include="IBugTraqProvider2String.cs" />
     <Compile Include="MetaIssue.cs" />
     <Compile Include="Providers\GitHub\GithubRepository.cs" />
     <Compile Include="Providers\GitHub\IssueTableParser.cs" />
