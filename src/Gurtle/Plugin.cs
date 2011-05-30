@@ -50,7 +50,7 @@ namespace Gurtle
     [Guid("91974081-2DC7-4FB1-B3BE-0DE1C8D6CE4E")]
 #endif
     [ClassInterface(ClassInterfaceType.None)]
-    public sealed class Plugin : IBugTraqProvider2String, IBugTraqProvider2
+    public sealed class Plugin : IBugTraqProvider2String, IBugTraqProvider, IBugTraqProvider2
     {
         private IList<Issue> _issues;
         private Parameters _parameters;
