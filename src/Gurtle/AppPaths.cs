@@ -46,10 +46,9 @@ namespace Gurtle
 
         private static string GetLocalImpl(string tailPath)
         {
-            var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var assemblyName = Assembly.GetExecutingAssembly().GetName();
-            var appVersionedPath = string.Format(@"{0}\{1}", assemblyName.Name, assemblyName.Version.ToString(2));
-            var path = Path.Combine(localAppDataPath, appVersionedPath);
+            var path = Path.Combine(localAppDataPath, assemblyName.Name);
             return !string.IsNullOrEmpty(tailPath) ? Path.Combine(path, tailPath) : path;
         }
     }
