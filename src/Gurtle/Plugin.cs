@@ -250,7 +250,7 @@ namespace Gurtle
                 if (updates.Count == 0)
                     break;
 
-                var credential = CredentialPrompt.Prompt(parentWindow, project.Name, project.ProjectName + ".gccred");
+                var credential = CredentialPrompt.Prompt(parentWindow, project.Name, project.Name + "-" + FilenameUtils.EscapeFilename(project.ProjectName) + ".gccred");
                 if (credential == null)
                     continue;
 
