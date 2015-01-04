@@ -47,7 +47,10 @@ namespace Gurtle.Providers.GitHub
                 issue.Id = (int)data[i]["number"];
                 issue.Summary = (string)data[i]["title"];
                 issue.Status = (string)data[i]["state"];
-                issue.Owner = (string)data[i]["assignee"]["login"];
+                if (data[i]["assignee"] != null)
+                {
+                    issue.Owner = (string)data[i]["assignee"]["login"];
+                }
                 if (data[i]["milestone"] != null)
                 {
                     issue.Milestone = (string)data[i]["milestone"]["title"];
