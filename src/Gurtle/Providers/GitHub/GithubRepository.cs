@@ -178,7 +178,7 @@ namespace Gurtle.Providers.GitHub
             Debug.Assert(project != null);
             Debug.Assert(onData != null);
 
-            var client = new WebClient();
+            var client = new Gurtle.WebClient();
 
             client.DownloadStringAsync(this.IssuesUrl());
 
@@ -259,7 +259,7 @@ namespace Gurtle.Providers.GitHub
         public void UpdateIssue(IssueUpdate update, NetworkCredential credential,
             Action<string> stdout, Action<string> stderr)
         {
-            var client = new WebClient();
+            var client = new Gurtle.WebClient();
             System.Collections.Specialized.NameValueCollection data = new System.Collections.Specialized.NameValueCollection(1);
             if (update.Comment.Length > 0)
             {

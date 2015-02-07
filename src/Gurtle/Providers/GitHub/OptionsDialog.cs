@@ -96,7 +96,7 @@ namespace Gurtle.Providers.GitHub
                 var projectName = _projectNameBox.Text;
                 var url = new GitHubRepository(projectName).Url;
                 using (CurrentCursorScope.EnterWait())
-                    new WebClient().DownloadData(url);
+                    new Gurtle.WebClient().DownloadData(url);
                 var message = string.Format("The GitHub repository '{0}' appears valid and reachable at {1}.", projectName, url);
                 MessageBox.Show(message, "Test Passed", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
