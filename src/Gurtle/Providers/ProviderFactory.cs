@@ -39,6 +39,8 @@ namespace Gurtle.Providers
             {
                 case "googlecode":
                     return new GoogleCode.GoogleCodeProject(projectName);
+                case "gitlab":
+                    return new GitLab.GitLabRepository(projectName);
                 case "github":
                     return new GitHub.GitHubRepository(projectName);
                 case "trac":
@@ -60,6 +62,8 @@ namespace Gurtle.Providers
                     return new GoogleCode.GoogleCodeProject();
                 case "github":
                     return new GitHub.GitHubRepository();
+                case "gitlab":
+                    return new GitLab.GitLabRepository();
                 case "trac":
                     return new Trac.TracProject();
                 default:
@@ -69,7 +73,7 @@ namespace Gurtle.Providers
 
         public static string[] getProviders()
         {
-            return new string[] { "googlecode", "github", "trac" };
+            return new string[] { "googlecode", "gitlab", "github", "trac" };
         }
     }
 }
